@@ -3,3 +3,10 @@ export type Message = {
   content: string;
   role: 'user' | 'assistant';
 };
+
+export type Comment = {
+  id: number;
+  text: string;
+  selectionStart: number;
+  selectionEnd: number;
+};
