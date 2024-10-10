@@ -9,4 +9,5 @@ export type Comment = {
   text: string;
   selectionStart: number;
   selectionEnd: number;
+  position: number;
 };

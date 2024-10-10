@@ -1,4 +1,4 @@
-import { useRef, useState, KeyboardEvent } from 'react';
+import { useRef, useState, KeyboardEvent, useEffect } from 'react';
 import Message from './Message';
 import { messages } from './data';
 import type { Comment } from './types';
@@ -9,19 +9,41 @@ const App = () => {
   const [selectedText, setSelectedText] = useState<{
     start: number;
     end: number;
+    position: number;
   } | null>(null);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const chatContentRef = useRef<HTMLDivElement>(null);
   const commentFormRef = useRef<HTMLFormElement>(null);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (chatContentRef.current) {
+        const chatRect =
+          chatContentRef.current.getBoundingClientRect();
+        setComments(prevComments =>
+          prevComments.map(comment => ({
+            ...comment,
+            position: comment.position - chatRect.top,
+          })),
+        );
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleTextSelection = () => {
     const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const start = range.startOffset;
-      const end = range.endOffset;
-      setSelectedText({ start, end });
-    }
+    if (!selection || selection.rangeCount == 0) return;
+
+    const range = selection.getRangeAt(0);
+    const start = range.startOffset;
+    const end = range.endOffset;
+    const rect = range.getBoundingClientRect();
+    const scrollTop = document.documentElement.scrollTop;
+    const position = rect.top + scrollTop;
+    setSelectedText({ start, end, position });
   };
 
   const handleAddComment = () => {
@@ -41,6 +63,7 @@ const App = () => {
           text: commentText,
           selectionStart: selectedText.start,
           selectionEnd: selectedText.end,
+          position: selectedText.position,
         };
         setComments([...comments, newComment]);
         setShowCommentBox(false);
@@ -94,12 +117,13 @@ const App = () => {
             </button>
           )}
         </div>
-        <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
+        <div className="w-1/3 bg-white p-6 rounded-lg shadow-md relative">
           <div className="space-y-4">
             {comments.map(comment => (
               <div
                 key={comment.id}
-                className="p-4 bg-gray-50 rounded shadow"
+                className="p-4 bg-gray-50 rounded shadow absolute left-0 right-0 ml-4 mr-4"
+                style={{ top: `${comment.position}px` }}
               >
                 {renderComment(comment.text)}
               </div>
