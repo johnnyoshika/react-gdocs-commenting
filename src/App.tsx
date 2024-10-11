@@ -1,8 +1,15 @@
-import { useRef, useState, KeyboardEvent, useEffect } from 'react';
+import {
+  useRef,
+  useState,
+  KeyboardEvent,
+  useEffect,
+  useCallback,
+} from 'react';
 import Message from './Message';
 import { messages } from './data';
 import type { Comment, TextSelection } from './types';
 import React from 'react';
+import { debounce } from 'lodash';
 
 const App = () => {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -11,39 +18,40 @@ const App = () => {
   const chatContentRef = useRef<HTMLDivElement>(null);
   const commentFormRef = useRef<HTMLFormElement>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!chatContentRef.current) return;
+  const handleResize = useCallback(() => {
+    if (!chatContentRef.current) return;
 
-      const chatRect = chatContentRef.current.getBoundingClientRect();
-      setComments(prevComments =>
-        prevComments.map(comment => {
-          const messageElement =
-            chatContentRef.current?.querySelector(
-              `[data-message-id="${comment.selection.messageId}"]`,
-            );
-          if (!messageElement) return comment;
+    const chatRect = chatContentRef.current.getBoundingClientRect();
+    setComments(prevComments =>
+      prevComments.map(comment => {
+        const messageElement = chatContentRef.current?.querySelector(
+          `[data-message-id="${comment.selection.messageId}"]`,
+        );
+        if (!messageElement) return comment;
 
-          const messageRect = messageElement.getBoundingClientRect();
-          const newPosition =
-            messageRect.top +
-            comment.selection.position -
-            chatRect.top;
+        const messageRect = messageElement.getBoundingClientRect();
+        const newPosition =
+          messageRect.top + comment.selection.position - chatRect.top;
 
-          return {
-            ...comment,
-            selection: {
-              ...comment.selection,
-              position: newPosition,
-            },
-          };
-        }),
-      );
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+        return {
+          ...comment,
+          selection: {
+            ...comment.selection,
+            position: newPosition,
+          },
+        };
+      }),
+    );
   }, []);
+
+  useEffect(() => {
+    const debouncedHandleResize = debounce(handleResize, 250);
+    window.addEventListener('resize', debouncedHandleResize);
+    return () => {
+      window.removeEventListener('resize', debouncedHandleResize);
+      debouncedHandleResize.cancel(); // Cancel any pending debounced calls
+    };
+  }, [handleResize]);
 
   const getTextNodesInElement = (element: Node): Text[] => {
     const textNodes: Text[] = [];
@@ -81,7 +89,10 @@ const App = () => {
 
   const handleTextSelection = () => {
     const selection = window.getSelection();
-    if (!selection || selection.rangeCount == 0) return;
+    if (!selection || selection.rangeCount == 0) {
+      setSelectedText(undefined);
+      return;
+    }
 
     const range = selection.getRangeAt(0);
     const messageElement =
@@ -109,8 +120,7 @@ const App = () => {
 
     // Calculate the vertical position of the selection
     const rect = range.getBoundingClientRect();
-    const scrollTop =
-      window.pageYOffset || document.documentElement.scrollTop;
+    const scrollTop = document.documentElement.scrollTop;
     const position = rect.top + scrollTop;
 
     setSelectedText({
@@ -185,7 +195,8 @@ const App = () => {
           {selectedText && (
             <button
               onClick={handleAddComment}
-              className="absolute top-1/2 right-2 bg-blue-500 text-white p-2 rounded-full"
+              className="absolute right-2 bg-blue-500 text-white p-2 rounded-full"
+              style={{ top: `${selectedText.position}px` }}
             >
               +
             </button>
