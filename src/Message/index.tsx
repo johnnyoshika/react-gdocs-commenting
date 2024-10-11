@@ -4,7 +4,7 @@ import type { Message } from '../types';
 const Message = ({ message }: { message: Message }) => {
   return (
     <div
-      key={message.id}
+      data-message-id={message.id}
       className={`mb-4 p-4 rounded-lg shadow ${
         message.role === 'assistant' ? 'bg-blue-100' : 'bg-gray-200'
       }`}

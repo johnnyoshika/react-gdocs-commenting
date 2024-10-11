@@ -1,76 +1,129 @@
 import { useRef, useState, KeyboardEvent, useEffect } from 'react';
 import Message from './Message';
 import { messages } from './data';
-import type { Comment } from './types';
+import type { Comment, TextSelection } from './types';
 import React from 'react';
 
 const App = () => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [selectedText, setSelectedText] = useState<{
-    start: number;
-    end: number;
-    position: number;
-  } | null>(null);
+  const [selectedText, setSelectedText] = useState<TextSelection>();
   const [showCommentBox, setShowCommentBox] = useState(false);
   const chatContentRef = useRef<HTMLDivElement>(null);
   const commentFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     const handleResize = () => {
-      if (chatContentRef.current) {
-        const chatRect =
-          chatContentRef.current.getBoundingClientRect();
-        setComments(prevComments =>
-          prevComments.map(comment => ({
+      if (!chatContentRef.current) return;
+
+      const chatRect = chatContentRef.current.getBoundingClientRect();
+      setComments(prevComments =>
+        prevComments.map(comment => {
+          const messageElement =
+            chatContentRef.current?.querySelector(
+              `[data-message-id="${comment.selection.messageId}"]`,
+            );
+          if (!messageElement) return comment;
+
+          const messageRect = messageElement.getBoundingClientRect();
+          const newPosition =
+            messageRect.top +
+            comment.selection.position -
+            chatRect.top;
+
+          return {
             ...comment,
-            position: comment.position - chatRect.top,
-          })),
-        );
-      }
+            selection: {
+              ...comment.selection,
+              position: newPosition,
+            },
+          };
+        }),
+      );
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const getTextNodesInElement = (element: Node): Text[] => {
+    const textNodes: Text[] = [];
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null,
+    );
+
+    let node;
+    while ((node = walker.nextNode())) {
+      textNodes.push(node as Text);
+    }
+
+    return textNodes;
+  };
+
+  const getOffsetInTextContent = (
+    element: Element,
+    targetNode: Node,
+    offsetInNode: number,
+  ): number => {
+    const textNodes = getTextNodesInElement(element);
+    let totalOffset = 0;
+
+    for (const textNode of textNodes) {
+      if (textNode === targetNode) {
+        return totalOffset + offsetInNode;
+      }
+      totalOffset += textNode.length;
+    }
+
+    return -1; // Should never happen if targetNode is within element
+  };
+
   const handleTextSelection = () => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount == 0) return;
 
     const range = selection.getRangeAt(0);
-    const start = range.startOffset;
-    const end = range.endOffset;
+    const messageElement =
+      range.startContainer.parentElement?.closest(
+        '[data-message-id]',
+      );
+
+    if (!messageElement) return;
+
+    const messageId = messageElement.getAttribute('data-message-id');
+
+    if (!messageId) return;
+
+    const startOffset = getOffsetInTextContent(
+      messageElement,
+      range.startContainer,
+      range.startOffset,
+    );
+    const endOffset = getOffsetInTextContent(
+      messageElement,
+      range.endContainer,
+      range.endOffset,
+    );
+    const selectedText = range.toString();
+
+    // Calculate the vertical position of the selection
     const rect = range.getBoundingClientRect();
-    const scrollTop = document.documentElement.scrollTop;
+    const scrollTop =
+      window.pageYOffset || document.documentElement.scrollTop;
     const position = rect.top + scrollTop;
-    setSelectedText({ start, end, position });
+
+    setSelectedText({
+      messageId,
+      startOffset,
+      endOffset,
+      selectedText,
+      position,
+    });
   };
 
   const handleAddComment = () => {
     setShowCommentBox(true);
-  };
-
-  const submitComment = () => {
-    if (commentFormRef.current) {
-      const form = commentFormRef.current;
-      const commentText = (
-        form.elements.namedItem('comment') as HTMLTextAreaElement
-      ).value;
-
-      if (selectedText && commentText) {
-        const newComment: Comment = {
-          id: comments.length + 1,
-          text: commentText,
-          selectionStart: selectedText.start,
-          selectionEnd: selectedText.end,
-          position: selectedText.position,
-        };
-        setComments([...comments, newComment]);
-        setShowCommentBox(false);
-        setSelectedText(null);
-        form.reset();
-      }
-    }
   };
 
   const handleCommentSubmit = (
@@ -78,6 +131,27 @@ const App = () => {
   ) => {
     event.preventDefault();
     submitComment();
+  };
+
+  const submitComment = () => {
+    if (!commentFormRef.current || !selectedText) return;
+
+    const form = commentFormRef.current;
+    const commentText = (
+      form.elements.namedItem('comment') as HTMLTextAreaElement
+    ).value;
+
+    if (!commentText) return;
+
+    const newComment: Comment = {
+      id: (comments.length + 1).toString(),
+      text: commentText,
+      selection: selectedText,
+    };
+    setComments([...comments, newComment]);
+    setShowCommentBox(false);
+    setSelectedText(undefined);
+    form.reset();
   };
 
   const handleKeyDown = (
@@ -123,7 +197,7 @@ const App = () => {
               <div
                 key={comment.id}
                 className="p-4 bg-gray-50 rounded shadow absolute left-0 right-0 ml-4 mr-4"
-                style={{ top: `${comment.position}px` }}
+                style={{ top: `${comment.selection.position}px` }}
               >
                 {renderComment(comment.text)}
               </div>
