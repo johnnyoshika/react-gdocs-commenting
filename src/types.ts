@@ -4,16 +4,11 @@ export type Message = {
   role: 'user' | 'assistant';
 };
 
-export type TextSelection = {
-  messageId: string;
-  startOffset: number;
-  endOffset: number;
-  selectedText: string;
-  positionTop: number;
-};
-
-export type Comment = {
+export type MessageComment = {
   id: string;
+  selection: {
+    startOffset: number;
+    endOffset: number;
+  };
   text: string;
-  selection: TextSelection;
 };
