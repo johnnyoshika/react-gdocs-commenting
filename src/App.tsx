@@ -95,6 +95,13 @@ const App = () => {
     }
 
     const range = selection.getRangeAt(0);
+
+    // Check if the selection is collapsed (i.e., it's just a single click)
+    if (range.collapsed) {
+      setSelectedText(undefined);
+      return;
+    }
+
     const messageElement =
       range.startContainer.parentElement?.closest(
         '[data-message-id]',
