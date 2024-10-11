@@ -17,9 +17,13 @@ const App = () => {
   const [showCommentBox, setShowCommentBox] = useState(false);
   const chatContentRef = useRef<HTMLDivElement>(null);
   const commentFormRef = useRef<HTMLFormElement>(null);
+  const commentContainerRef = useRef<HTMLDivElement>(null);
+  const [commentContainerOffset, setCommentContainerOffset] =
+    useState(0);
 
   const handleResize = useCallback(() => {
-    if (!chatContentRef.current) return;
+    if (!chatContentRef.current || !commentContainerRef.current)
+      return;
 
     const chatRect = chatContentRef.current.getBoundingClientRect();
     setComments(prevComments =>
@@ -44,9 +48,17 @@ const App = () => {
         };
       }),
     );
-  }, []);
+
+    const offset =
+      commentContainerRef.current.getBoundingClientRect().top +
+      window.scrollY;
+    setCommentContainerOffset(offset);
+  }, [setComments, setCommentContainerOffset]);
 
   useEffect(() => {
+    // Initial call to set correct positions
+    handleResize();
+
     const debouncedHandleResize = debounce(handleResize, 250);
     window.addEventListener('resize', debouncedHandleResize);
     return () => {
@@ -194,7 +206,10 @@ const App = () => {
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl w-full flex">
-        <div className="w-2/3 bg-white p-6 rounded-lg shadow-md mr-4 relative">
+        <div
+          className="w-2/3 bg-white p-6 rounded-lg shadow-md mr-4 relative"
+          ref={commentContainerRef}
+        >
           <h2 className="text-2xl font-bold mb-4">AI Chat</h2>
           <div ref={chatContentRef} onMouseUp={handleTextSelection}>
             {messages.map(message => (
@@ -205,7 +220,11 @@ const App = () => {
             <button
               onClick={handleAddComment}
               className="absolute right-2 bg-blue-500 text-white p-2 rounded-full"
-              style={{ top: `${selectedText.positionTop}px` }}
+              style={{
+                top: `${
+                  selectedText.positionTop - commentContainerOffset
+                }px`,
+              }}
             >
               +
             </button>
@@ -217,7 +236,12 @@ const App = () => {
               <div
                 key={comment.id}
                 className="p-4 bg-gray-50 rounded shadow absolute left-0 right-0 ml-4 mr-4"
-                style={{ top: `${comment.selection.positionTop}px` }}
+                style={{
+                  top: `${
+                    comment.selection.positionTop -
+                    commentContainerOffset
+                  }px`,
+                }}
               >
                 {renderComment(comment.text)}
               </div>
