@@ -9,7 +9,7 @@ export type TextSelection = {
   startOffset: number;
   endOffset: number;
   selectedText: string;
-  position: number;
+  positionTop: number;
 };
 
 export type Comment = {

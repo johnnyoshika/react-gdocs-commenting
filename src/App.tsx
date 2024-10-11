@@ -31,13 +31,15 @@ const App = () => {
 
         const messageRect = messageElement.getBoundingClientRect();
         const newPosition =
-          messageRect.top + comment.selection.position - chatRect.top;
+          messageRect.top +
+          comment.selection.positionTop -
+          chatRect.top;
 
         return {
           ...comment,
           selection: {
             ...comment.selection,
-            position: newPosition,
+            positionTop: newPosition,
           },
         };
       }),
@@ -135,7 +137,7 @@ const App = () => {
       startOffset,
       endOffset,
       selectedText,
-      position,
+      positionTop: position,
     });
   };
 
@@ -203,7 +205,7 @@ const App = () => {
             <button
               onClick={handleAddComment}
               className="absolute right-2 bg-blue-500 text-white p-2 rounded-full"
-              style={{ top: `${selectedText.position}px` }}
+              style={{ top: `${selectedText.positionTop}px` }}
             >
               +
             </button>
@@ -215,7 +217,7 @@ const App = () => {
               <div
                 key={comment.id}
                 className="p-4 bg-gray-50 rounded shadow absolute left-0 right-0 ml-4 mr-4"
-                style={{ top: `${comment.selection.position}px` }}
+                style={{ top: `${comment.selection.positionTop}px` }}
               >
                 {renderComment(comment.text)}
               </div>
