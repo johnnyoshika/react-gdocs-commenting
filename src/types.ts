@@ -1,14 +1,12 @@
+import { Comment } from './plugin/types';
+
 export type Message = {
   id: string;
   content: string;
   role: 'user' | 'assistant';
 };
 
-export type MessageComment = {
-  id: string;
-  selection: {
-    startOffset: number;
-    endOffset: number;
-  };
+export interface MessageComment extends Comment {
+  messageId: string;
   text: string;
-};
+}

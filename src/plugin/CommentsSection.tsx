@@ -9,7 +9,11 @@ const CommentsSection = ({
   handleAddComment,
 }: {
   children: ReactNode;
-  handleAddComment: (text: string, selection: TextSelection) => void;
+  handleAddComment: (
+    containerId: string,
+    text: string,
+    selection: TextSelection,
+  ) => void;
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 

@@ -2,10 +2,10 @@ import React from 'react';
 import { Comment } from './types';
 
 const Highlight = ({
-  children,
+  markdown,
   comments,
 }: {
-  children: React.ReactNode;
+  markdown: string;
   comments: Comment[];
 }) => {
   const result = processChildren(children, 0, comments);
