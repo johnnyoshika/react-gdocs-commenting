@@ -25,33 +25,12 @@ const AppLayout = () => {
                 </span>
               }
             >
-              <div>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing
-                  elit. Nam convallis elit vel risus placerat
-                  ullamcorper. Nulla maximus interdum tellus, eu
-                  viverra orci vestibulum eget. Aliquam finibus non
-                  dolor eu hendrerit. Curabitur commodo dolor non
-                  vehicula imperdiet. Vivamus congue in velit eu
-                  euismod. Nunc libero tortor, viverra eget feugiat
-                  vitae, porttitor non dui. Nullam quis leo in justo
-                  cursus interdum non iaculis ipsum. Nulla ut rutrum
-                  lorem. Nam <strong>viverra id tellus</strong> ut
-                  sagittis.
-                </p>
-                <p>
-                  Suspendisse consectetur mi mi, eu laoreet purus
-                  efficitur ut. Donec ullamcorper metus purus, at
-                  bibendum eros luctus ut. Vestibulum commodo, sapien
-                  sed laoreet bibendum, est est tincidunt purus, in
-                  interdum nisi{' '}
-                  <span style={{ fontSize: '60%' }}>quam</span> at
-                  urna. Donec commodo urna eget feugiat fringilla.
-                  Nulla vel lorem convallis ligula tincidunt gravida.
-                  Phasellus venenatis congue enim et pellentesque.
-                  Phasellus sagittis consectetur malesuada.
-                </p>
-              </div>
+              {messages.map(message => (
+                <MessageContainer
+                  key={message.id}
+                  message={message}
+                />
+              ))}
             </CommentableContent>
           </div>
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
