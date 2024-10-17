@@ -1,8 +1,12 @@
 import { useRef } from 'react';
 import { useSelectionContext } from './SelectionContext';
-import { getOffsetInTextContent } from './utils';
 import { Comment } from './types';
-import Highlight from './Highlight';
+import { parseMarkdown } from './markdown/parseMarkdown';
+import { getSourceOffset } from './markdown/helpers';
+import { renderAstToReactWithPositions } from './markdown/renderAstToReact';
+import { insertHighlightsIntoAst } from './markdown/insertHighlightsIntoAst';
+import { unified } from 'unified';
+import remarkRehype from 'remark-rehype';
 
 const CommentableContainer = ({
   containerId,
@@ -14,6 +18,23 @@ const CommentableContainer = ({
   comments: Comment[];
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Parse the markdown content into an MDAST
+  const mdast = parseMarkdown(markdown);
+
+  // Insert highlights into the MDAST based on comments
+  const mdastWithHighlights = insertHighlightsIntoAst(
+    mdast,
+    comments,
+  );
+
+  // Convert MDAST to HAST
+  const hast = unified()
+    .use(remarkRehype)
+    .runSync(mdastWithHighlights);
+
+  // Render the HAST to React components with position data
+  const renderedContent = renderAstToReactWithPositions(hast);
 
   const { setSelectedText } = useSelectionContext();
 
@@ -43,16 +64,20 @@ const CommentableContainer = ({
       return;
     }
 
-    const startOffset = getOffsetInTextContent(
-      containerRef.current,
+    // Get the start and end positions in the markdown source
+    const startOffset = getSourceOffset(
       range.startContainer,
       range.startOffset,
     );
-    const endOffset = getOffsetInTextContent(
-      containerRef.current,
+    const endOffset = getSourceOffset(
       range.endContainer,
       range.endOffset,
     );
+
+    if (startOffset === null || endOffset === null) {
+      console.error('Unable to map selection to source positions.');
+      return;
+    }
 
     const rect = range.getBoundingClientRect();
     const scrollTop = document.documentElement.scrollTop;
@@ -68,7 +93,7 @@ const CommentableContainer = ({
 
   return (
     <div ref={containerRef} onMouseUp={handleTextSelection}>
-      <Highlight comments={comments}>{markdown}</Highlight>
+      {renderedContent}
     </div>
   );
 };
