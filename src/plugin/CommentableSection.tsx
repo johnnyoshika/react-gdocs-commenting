@@ -1,13 +1,9 @@
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
-import {
-  getOffsetInTextContent,
-  findNodeAndOffsetFromTotalOffset,
-} from './utils';
+import { findNodeAndOffsetFromTotalOffset } from './utils';
 import { CommentPositions } from './types';
 import CommentAddTrigger from './CommentAddTrigger';
-import Highlight from './Highlight';
 
 import './styles.css';
 
@@ -20,12 +16,8 @@ const CommentableSection = ({
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const {
-    comments,
-    setContentOffsetY,
-    setPositions,
-    setSelectedText,
-  } = useSelectionContext();
+  const { comments, setContentOffsetY, setPositions } =
+    useSelectionContext();
 
   const setOffset = useCallback(() => {
     if (!sectionRef.current) return;
@@ -83,52 +75,9 @@ const CommentableSection = ({
     };
   }, [reposition]);
 
-  const handleTextSelection = () => {
-    if (!sectionRef.current) return;
-
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount == 0) {
-      setSelectedText(undefined);
-      return;
-    }
-
-    const range = selection.getRangeAt(0);
-
-    // Check if the selection is collapsed (i.e., it's just a single click)
-    if (range.collapsed) {
-      setSelectedText(undefined);
-      return;
-    }
-
-    const startOffset = getOffsetInTextContent(
-      sectionRef.current,
-      range.startContainer,
-      range.startOffset,
-    );
-    const endOffset = getOffsetInTextContent(
-      sectionRef.current,
-      range.endContainer,
-      range.endOffset,
-    );
-
-    const rect = range.getBoundingClientRect();
-    const scrollTop = document.documentElement.scrollTop;
-    const positionTop = rect.top + scrollTop;
-
-    setSelectedText({
-      startOffset,
-      endOffset,
-      positionTop,
-    });
-  };
-
   return (
-    <div
-      ref={sectionRef}
-      onMouseUp={handleTextSelection}
-      style={{ position: 'relative' }}
-    >
-      <Highlight comments={comments}>{children}</Highlight>
+    <div ref={sectionRef} style={{ position: 'relative' }}>
+      {children}
       <CommentAddTrigger>{addButton}</CommentAddTrigger>
     </div>
   );

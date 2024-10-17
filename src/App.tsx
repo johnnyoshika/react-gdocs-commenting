@@ -8,6 +8,7 @@ import CommentsContext, {
 } from './CommentsContext';
 import { SelectionProvider } from './plugin/SelectionContext';
 import CommentPosition from './plugin/CommentPosition';
+import CommentableContainer from './plugin/CommentableContainer';
 
 const AppLayout = () => {
   const { comments, addComment } = useCommentsContext();
@@ -26,18 +27,24 @@ const AppLayout = () => {
               }
             >
               {messages.map(message => (
-                <MessageContainer
-                  key={message.id}
-                  message={message}
-                />
+                <MessageContainer key={message.id} message={message}>
+                  <CommentableContainer
+                    containerId={message.id}
+                    markdown={message.content}
+                    comments={comments.filter(
+                      c => c.messageId === message.id,
+                    )}
+                  />
+                </MessageContainer>
               ))}
             </CommentableSection>
           </div>
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection
-              handleAddComment={(text, selection) =>
+              handleAddComment={(containerId, text, selection) =>
                 addComment({
                   id: Math.random().toString(36).substring(2, 12),
+                  messageId: containerId,
                   text,
                   selection,
                 })

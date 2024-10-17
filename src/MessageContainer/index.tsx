@@ -1,14 +1,20 @@
-import ReactMarkdown from 'react-markdown';
 import type { Message } from '../types';
+import { ReactNode } from 'react';
 
-const MessageContainer = ({ message }: { message: Message }) => {
+const MessageContainer = ({
+  children,
+  message,
+}: {
+  children: ReactNode;
+  message: Message;
+}) => {
   return (
     <div
       className={`mb-4 p-4 rounded-lg shadow ${
         message.role === 'assistant' ? 'bg-blue-100' : 'bg-gray-200'
       }`}
     >
-      <ReactMarkdown>{message.content}</ReactMarkdown>
+      {children}
     </div>
   );
 };

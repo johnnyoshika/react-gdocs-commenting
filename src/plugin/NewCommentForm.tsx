@@ -5,7 +5,11 @@ import { TextSelection } from './types';
 const NewCommentForm = ({
   handleAddComment,
 }: {
-  handleAddComment: (text: string, selection: TextSelection) => void;
+  handleAddComment: (
+    containerId: string,
+    text: string,
+    selection: TextSelection,
+  ) => void;
 }) => {
   const commentFormRef = useRef<HTMLFormElement>(null);
 
