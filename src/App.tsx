@@ -58,7 +58,26 @@ const AppLayout = () => {
 
 const App = () => {
   return (
-    <CommentsContext initialComments={[]}>
+    <CommentsContext
+      initialComments={[
+        {
+          id: 'djy8is63fm',
+          text: 'This is a comment',
+          selection: {
+            startOffset: 446,
+            endOffset: 508,
+          },
+        },
+        {
+          id: 't7zeflkqk6',
+          text: 'Privacy comment',
+          selection: {
+            startOffset: 688,
+            endOffset: 707,
+          },
+        },
+      ]}
+    >
       <AppLayout />
     </CommentsContext>
   );

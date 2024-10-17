@@ -7,6 +7,9 @@ import {
 } from './utils';
 import { CommentPositions } from './types';
 import CommentAddTrigger from './CommentAddTrigger';
+import Highlight from './Highlight';
+
+import './styles.css';
 
 const CommentableContent = ({
   children,
@@ -125,7 +128,7 @@ const CommentableContent = ({
       onMouseUp={handleTextSelection}
       style={{ position: 'relative' }}
     >
-      {children}
+      <Highlight comments={comments}>{children}</Highlight>
       <CommentAddTrigger>{addButton}</CommentAddTrigger>
     </div>
   );

@@ -1,0 +1,7 @@
+.highlight {
+  background-color: yellow;
+}
+
+.highlight .highlight {
+  background-color: orange; /* For nested highlights */
+}
