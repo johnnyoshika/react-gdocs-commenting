@@ -11,14 +11,14 @@ import Highlight from './Highlight';
 
 import './styles.css';
 
-const CommentableContent = ({
+const CommentableSection = ({
   children,
   addButton,
 }: {
   children: ReactNode;
   addButton: ReactNode;
 }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const {
     comments,
@@ -28,25 +28,25 @@ const CommentableContent = ({
   } = useSelectionContext();
 
   const setOffset = useCallback(() => {
-    if (!contentRef.current) return;
+    if (!sectionRef.current) return;
 
     const offset =
-      contentRef.current.getBoundingClientRect().top + window.scrollY;
+      sectionRef.current.getBoundingClientRect().top + window.scrollY;
     setContentOffsetY(offset);
   }, [setContentOffsetY]);
 
   const reposition = useCallback(() => {
-    if (!contentRef.current) return;
+    if (!sectionRef.current) return;
 
     setOffset();
     setPositions(
       comments.reduce((acc, comment) => {
         const startPosition = findNodeAndOffsetFromTotalOffset(
-          contentRef.current!,
+          sectionRef.current!,
           comment.selection.startOffset,
         );
         const endPosition = findNodeAndOffsetFromTotalOffset(
-          contentRef.current!,
+          sectionRef.current!,
           comment.selection.endOffset,
         );
 
@@ -84,7 +84,7 @@ const CommentableContent = ({
   }, [reposition]);
 
   const handleTextSelection = () => {
-    if (!contentRef.current) return;
+    if (!sectionRef.current) return;
 
     const selection = window.getSelection();
     if (!selection || selection.rangeCount == 0) {
@@ -101,12 +101,12 @@ const CommentableContent = ({
     }
 
     const startOffset = getOffsetInTextContent(
-      contentRef.current,
+      sectionRef.current,
       range.startContainer,
       range.startOffset,
     );
     const endOffset = getOffsetInTextContent(
-      contentRef.current,
+      sectionRef.current,
       range.endContainer,
       range.endOffset,
     );
@@ -124,7 +124,7 @@ const CommentableContent = ({
 
   return (
     <div
-      ref={contentRef}
+      ref={sectionRef}
       onMouseUp={handleTextSelection}
       style={{ position: 'relative' }}
     >
@@ -134,4 +134,4 @@ const CommentableContent = ({
   );
 };
 
-export default CommentableContent;
+export default CommentableSection;

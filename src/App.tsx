@@ -1,7 +1,7 @@
 import { messages } from './data';
 import CommentContainer from './CommentContainer';
 import CommentsSection from './plugin/CommentsSection';
-import CommentableContent from './plugin/CommentableContent';
+import CommentableSection from './plugin/CommentableSection';
 import MessageContainer from './MessageContainer';
 import CommentsContext, {
   useCommentsContext,
@@ -18,7 +18,7 @@ const AppLayout = () => {
         <div className="max-w-6xl w-full flex">
           <div className="w-2/3 bg-white p-6 rounded-lg shadow-md mr-4 relative">
             <h2 className="text-2xl font-bold mb-4">AI Chat</h2>
-            <CommentableContent
+            <CommentableSection
               addButton={
                 <span className="bg-blue-500 text-white p-2 rounded-full">
                   +
@@ -31,7 +31,7 @@ const AppLayout = () => {
                   message={message}
                 />
               ))}
-            </CommentableContent>
+            </CommentableSection>
           </div>
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection
