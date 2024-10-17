@@ -4,7 +4,7 @@ import { Comment } from './types';
 import { parseMarkdown } from './markdown/parseMarkdown';
 import { getSourceOffset } from './markdown/helpers';
 import { renderAstToReactWithPositions } from './markdown/renderAstToReact';
-import { insertHighlightsIntoAst } from './markdown/insertHighlightsIntoAst';
+import { insertHighlightsIntoHast } from './markdown/insertHighlightsIntoHast';
 import { unified } from 'unified';
 import remarkRehype from 'remark-rehype';
 
@@ -22,19 +22,16 @@ const CommentableContainer = ({
   // Parse the markdown content into an MDAST
   const mdast = parseMarkdown(markdown);
 
-  // Insert highlights into the MDAST based on comments
-  const mdastWithHighlights = insertHighlightsIntoAst(
-    mdast,
-    comments,
-  );
-
   // Convert MDAST to HAST
-  const hast = unified()
-    .use(remarkRehype)
-    .runSync(mdastWithHighlights);
+  const hast = unified().use(remarkRehype).runSync(mdast);
+
+  // Insert highlights into the HAST based on comments
+  const hastWithHighlights = insertHighlightsIntoHast(hast, comments);
 
   // Render the HAST to React components with position data
-  const renderedContent = renderAstToReactWithPositions(hast);
+  const renderedContent = renderAstToReactWithPositions(
+    hastWithHighlights,
+  );
 
   const { setSelectedText } = useSelectionContext();
 

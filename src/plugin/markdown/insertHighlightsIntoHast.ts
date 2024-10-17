@@ -1,23 +1,33 @@
-// insertHighlightsIntoAst.ts
+// insertHighlightsIntoHast.ts
 import { visit } from 'unist-util-visit';
-import { Node } from 'unist';
+import { Root, Element, Text } from 'hast';
 import { Comment } from '../types';
-import { Root } from 'mdast';
 
-export function insertHighlightsIntoAst(
-  ast: Node,
+export function insertHighlightsIntoHast(
+  hast: Root,
   comments: Comment[],
 ): Root {
-  const modifiedAst = JSON.parse(JSON.stringify(ast)); // Deep copy to avoid mutating the original AST
+  const modifiedHast = JSON.parse(JSON.stringify(hast)); // Deep copy to avoid mutating the original HAST
 
   comments.forEach(comment => {
     const { startOffset, endOffset } = comment.selection;
 
     visit(
-      modifiedAst,
+      modifiedHast,
       'text',
-      (node: any, index: number | undefined, parent: any) => {
-        if (typeof index !== 'number' || !parent) {
+      (node: Text, index?: number, parent?: Element) => {
+        if (index === undefined || !parent) {
+          return;
+        }
+
+        // Check if node.position and its properties are defined
+        if (
+          !node.position ||
+          !node.position.start ||
+          !node.position.end ||
+          node.position.start.offset === undefined ||
+          node.position.end.offset === undefined
+        ) {
           return;
         }
 
@@ -43,7 +53,7 @@ export function insertHighlightsIntoAst(
         );
         const afterText = text.slice(relativeEnd);
 
-        const newNodes = [];
+        const newNodes: Array<Text | Element> = [];
 
         if (beforeText) {
           newNodes.push({
@@ -119,5 +129,5 @@ export function insertHighlightsIntoAst(
     );
   });
 
-  return modifiedAst;
+  return modifiedHast;
 }
