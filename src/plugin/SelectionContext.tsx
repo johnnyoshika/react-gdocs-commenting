@@ -21,10 +21,10 @@ const SelectionContext = createContext<
       setSelectedText: (
         selection: TextSelectionPosition | undefined,
       ) => void;
-      contentOffsetY: number;
-      setContentOffsetY: (offsetY: number) => void;
-      commentsOffsetY: number;
-      setCommentsOffsetY: (offsetY: number) => void;
+      commentableSectionOffsetY: number;
+      setCommentableSectionOffsetY: (offsetY: number) => void;
+      commentsSectionOffsetY: number;
+      setCommentsSectionOffsetY: (offsetY: number) => void;
       showCommentBox: boolean;
       setShowCommentBox: (show: boolean) => void;
       positions: CommentPositions;
@@ -43,8 +43,10 @@ export const SelectionProvider = ({
   children: ReactNode;
   comments: Comment[];
 }) => {
-  const [contentOffsetY, setContentOffsetY] = useState(0);
-  const [commentsOffsetY, setCommentsOffsetY] = useState(0);
+  const [commentableSectionOffsetY, setCommentableSectionOffsetY] =
+    useState(0);
+  const [commentsSectionOffsetY, setCommentsSectionOffsetY] =
+    useState(0);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [selectedText, setSelectedText] = useState<
     TextSelectionPosition | undefined
@@ -60,10 +62,10 @@ export const SelectionProvider = ({
       commentableContainers,
       selectedText,
       setSelectedText,
-      contentOffsetY,
-      setContentOffsetY,
-      commentsOffsetY,
-      setCommentsOffsetY,
+      commentableSectionOffsetY,
+      setCommentableSectionOffsetY,
+      commentsSectionOffsetY,
+      setCommentsSectionOffsetY,
       showCommentBox,
       setShowCommentBox,
       positions,
@@ -74,10 +76,10 @@ export const SelectionProvider = ({
       commentableContainers,
       selectedText,
       setSelectedText,
-      contentOffsetY,
-      setContentOffsetY,
-      commentsOffsetY,
-      setCommentsOffsetY,
+      commentableSectionOffsetY,
+      setCommentableSectionOffsetY,
+      commentsSectionOffsetY,
+      setCommentsSectionOffsetY,
       showCommentBox,
       setShowCommentBox,
       positions,

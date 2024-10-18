@@ -20,7 +20,7 @@ const CommentableSection = ({
   const {
     commentableContainers,
     comments,
-    setContentOffsetY,
+    setCommentableSectionOffsetY,
     setPositions,
   } = useSelectionContext();
 
@@ -29,8 +29,8 @@ const CommentableSection = ({
 
     const offset =
       sectionRef.current.getBoundingClientRect().top + window.scrollY;
-    setContentOffsetY(offset);
-  }, [setContentOffsetY]);
+    setCommentableSectionOffsetY(offset);
+  }, [setCommentableSectionOffsetY]);
 
   const reposition = useCallback(() => {
     setOffset();

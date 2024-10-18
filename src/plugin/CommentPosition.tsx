@@ -9,7 +9,7 @@ const CommentPosition = ({
   children: ReactNode;
   comment: Comment;
 }) => {
-  const { commentsOffsetY, positions } = useSelectionContext();
+  const { commentsSectionOffsetY, positions } = useSelectionContext();
 
   const position = positions[comment.id];
   if (!position) return null;
@@ -18,7 +18,7 @@ const CommentPosition = ({
     <div
       style={{
         position: 'absolute',
-        top: `${position.top - commentsOffsetY}px`,
+        top: `${position.top - commentsSectionOffsetY}px`,
         left: 0,
       }}
     >

@@ -13,7 +13,8 @@ const CommentsSection = ({
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const { setCommentsOffsetY } = useSelectionContext();
+  const { setCommentsSectionOffsetY: setCommentsOffsetY } =
+    useSelectionContext();
 
   const setOffset = useCallback(() => {
     if (!sectionRef.current) return;

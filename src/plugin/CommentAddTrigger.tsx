@@ -2,8 +2,11 @@ import { ReactNode } from 'react';
 import { useSelectionContext } from './SelectionContext';
 
 const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
-  const { selectedText, contentOffsetY, setShowCommentBox } =
-    useSelectionContext();
+  const {
+    selectedText,
+    commentableSectionOffsetY,
+    setShowCommentBox,
+  } = useSelectionContext();
 
   const handleAddComment = () => {
     setShowCommentBox(true);
@@ -16,7 +19,9 @@ const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
       onClick={handleAddComment}
       style={{
         position: 'absolute',
-        top: `${(selectedText.positionTop ?? 0) - contentOffsetY}px`,
+        top: `${
+          (selectedText.positionTop ?? 0) - commentableSectionOffsetY
+        }px`,
         right: '-3rem',
       }}
     >
