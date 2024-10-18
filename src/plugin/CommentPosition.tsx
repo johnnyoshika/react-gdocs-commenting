@@ -20,6 +20,7 @@ const CommentPosition = ({
         position: 'absolute',
         top: `${position.top - commentsSectionOffsetY}px`,
         left: 0,
+        width: '100%',
       }}
     >
       {children}
