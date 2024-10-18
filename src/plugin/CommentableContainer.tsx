@@ -1,8 +1,7 @@
+// CommentableContainer.tsx
 import { ReactNode, useEffect, useRef } from 'react';
 import { useSelectionContext } from './SelectionContext';
 import { getOffsetInTextContent } from './utils';
-import { Comment } from './types';
-import Highlight from './Highlight';
 
 const CommentableContainer = ({
   containerId,

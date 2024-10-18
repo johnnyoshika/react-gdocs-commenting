@@ -1,3 +1,4 @@
+// CommentableSection.tsx
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
