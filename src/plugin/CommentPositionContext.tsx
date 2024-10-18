@@ -4,14 +4,21 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   ReactNode,
 } from 'react';
 import { useSelectionContext } from './SelectionContext';
+
+type CommentSize = {
+  height: number;
+};
 
 type CommentPositionContextType = {
   registerComment: (id: string) => void;
   unregisterComment: (id: string) => void;
   getAdjustedTop: (id: string) => number;
+  updateCommentSize: (id: string, size: CommentSize) => void;
 };
 
 const CommentPositionContext = createContext<
@@ -26,12 +33,15 @@ export const CommentPositionProvider = ({
   const [activeComments, setActiveComments] = useState<Set<string>>(
     new Set(),
   );
+  const [commentSizes, setCommentSizes] = useState<
+    Record<string, CommentSize>
+  >({});
   const [adjustedPositions, setAdjustedPositions] = useState<
     Record<string, number>
   >({});
   const { positions } = useSelectionContext();
 
-  useEffect(() => {
+  const updatePositions = useCallback(() => {
     const activePositions = Object.entries(positions)
       .filter(([id]) => activeComments.has(id))
       .sort(([, a], [, b]) => a.top - b.top);
@@ -44,31 +54,67 @@ export const CommentPositionProvider = ({
         currentTop = position.top;
       }
       newPositions[id] = currentTop;
-      currentTop += 70; // Adjust this value based on your comment height
+      currentTop += (commentSizes[id]?.height || 0) + 10; // 10px gap between comments
     });
 
     setAdjustedPositions(newPositions);
-  }, [positions, activeComments]);
+  }, [positions, activeComments, commentSizes]);
 
-  const registerComment = (id: string) => {
+  useEffect(() => {
+    updatePositions();
+  }, [updatePositions]);
+
+  const registerComment = useCallback((id: string) => {
     setActiveComments(prev => new Set(prev).add(id));
-  };
+  }, []);
 
-  const unregisterComment = (id: string) => {
+  const unregisterComment = useCallback((id: string) => {
     setActiveComments(prev => {
       const newSet = new Set(prev);
       newSet.delete(id);
       return newSet;
     });
-  };
+    setCommentSizes(prev => {
+      const newSizes = { ...prev };
+      delete newSizes[id];
+      return newSizes;
+    });
+  }, []);
 
-  const getAdjustedTop = (id: string) =>
-    adjustedPositions[id] || positions[id]?.top || 0;
+  const updateCommentSize = useCallback(
+    (id: string, size: CommentSize) => {
+      setCommentSizes(prev => {
+        if (JSON.stringify(prev[id]) !== JSON.stringify(size)) {
+          return { ...prev, [id]: size };
+        }
+        return prev;
+      });
+    },
+    [],
+  );
+
+  const getAdjustedTop = useCallback(
+    (id: string) => adjustedPositions[id] || positions[id]?.top || 0,
+    [adjustedPositions, positions],
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      registerComment,
+      unregisterComment,
+      getAdjustedTop,
+      updateCommentSize,
+    }),
+    [
+      registerComment,
+      unregisterComment,
+      getAdjustedTop,
+      updateCommentSize,
+    ],
+  );
 
   return (
-    <CommentPositionContext.Provider
-      value={{ registerComment, unregisterComment, getAdjustedTop }}
-    >
+    <CommentPositionContext.Provider value={contextValue}>
       {children}
     </CommentPositionContext.Provider>
   );
