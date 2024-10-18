@@ -8,7 +8,7 @@ const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
     setShowNewCommentBox,
   } = useSelectionContext();
 
-  const handleAddComment = () => {
+  const handleClick = () => {
     setShowNewCommentBox(true);
   };
 
@@ -16,7 +16,7 @@ const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
 
   return (
     <button
-      onClick={handleAddComment}
+      onClick={handleClick}
       style={{
         position: 'absolute',
         top: `${
