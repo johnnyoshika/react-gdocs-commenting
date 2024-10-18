@@ -3,6 +3,7 @@ import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
 import { TextSelection } from './types';
 import NewCommentForm from './NewCommentForm';
+import { CommentPositionProvider } from './CommentPositionContext';
 
 const CommentsSection = ({
   children,
@@ -37,10 +38,12 @@ const CommentsSection = ({
   }, [setOffset]);
 
   return (
-    <div ref={sectionRef} style={{ position: 'relative' }}>
-      <NewCommentForm handleAddComment={handleAddComment} />
-      {children}
-    </div>
+    <CommentPositionProvider>
+      <div ref={sectionRef} style={{ position: 'relative' }}>
+        <NewCommentForm handleAddComment={handleAddComment} />
+        {children}
+      </div>
+    </CommentPositionProvider>
   );
 };
 
