@@ -1,7 +1,7 @@
 import type { Message } from '../types';
 import { ReactNode } from 'react';
 
-const MessageContainer = ({
+const MessageBox = ({
   children,
   message,
 }: {
@@ -19,4 +19,4 @@ const MessageContainer = ({
   );
 };
 
-export default MessageContainer;
+export default MessageBox;

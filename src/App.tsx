@@ -1,8 +1,8 @@
 import { messages } from './data';
-import CommentContainer from './CommentContainer';
+import CommentBox from './CommentBox';
 import CommentsSection from './plugin/CommentsSection';
 import CommentableSection from './plugin/CommentableSection';
-import MessageContainer from './MessageContainer';
+import MessageBox from './MessageBox';
 import CommentsContext, {
   useCommentsContext,
 } from './CommentsContext';
@@ -27,7 +27,7 @@ const AppLayout = () => {
               }
             >
               {messages.map(message => (
-                <MessageContainer key={message.id} message={message}>
+                <MessageBox key={message.id} message={message}>
                   <CommentableContainer
                     containerId={message.id}
                     markdown={message.content}
@@ -35,7 +35,7 @@ const AppLayout = () => {
                       c => c.messageId === message.id,
                     )}
                   />
-                </MessageContainer>
+                </MessageBox>
               ))}
             </CommentableSection>
           </div>
@@ -52,7 +52,7 @@ const AppLayout = () => {
             >
               {comments.map(comment => (
                 <CommentPosition key={comment.id} comment={comment}>
-                  <CommentContainer comment={comment} />
+                  <CommentBox comment={comment} />
                 </CommentPosition>
               ))}
             </CommentsSection>

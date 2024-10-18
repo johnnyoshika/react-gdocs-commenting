@@ -10,11 +10,7 @@ const renderComment = (text: string) => {
   ));
 };
 
-const CommentContainer = ({
-  comment,
-}: {
-  comment: MessageComment;
-}) => {
+const CommentBox = ({ comment }: { comment: MessageComment }) => {
   return (
     <div key={comment.id} className="p-4 bg-gray-50 rounded shadow">
       {renderComment(comment.text)}
@@ -22,4 +18,4 @@ const CommentContainer = ({
   );
 };
 
-export default CommentContainer;
+export default CommentBox;
