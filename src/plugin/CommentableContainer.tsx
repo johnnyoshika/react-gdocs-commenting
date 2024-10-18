@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { useSelectionContext } from './SelectionContext';
 import { getOffsetInTextContent } from './utils';
 import { Comment } from './types';
@@ -6,12 +6,10 @@ import Highlight from './Highlight';
 
 const CommentableContainer = ({
   containerId,
-  markdown,
-  comments,
+  children,
 }: {
   containerId: string;
-  markdown: string;
-  comments: Comment[];
+  children: ReactNode;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -76,7 +74,7 @@ const CommentableContainer = ({
 
   return (
     <div ref={containerRef} onMouseUp={handleTextSelection}>
-      <Highlight comments={comments} markdown={markdown} />
+      {children}
     </div>
   );
 };

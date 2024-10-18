@@ -1,12 +1,13 @@
 import type { Message } from '../types';
-import { ReactNode } from 'react';
+import { Comment } from '../plugin/types';
+import Highlight from '../plugin/Highlight';
 
 const MessageBox = ({
-  children,
   message,
+  comments,
 }: {
-  children: ReactNode;
   message: Message;
+  comments: Comment[];
 }) => {
   return (
     <div
@@ -14,7 +15,7 @@ const MessageBox = ({
         message.role === 'assistant' ? 'bg-blue-100' : 'bg-gray-200'
       }`}
     >
-      {children}
+      <Highlight markdown={message.content} comments={comments} />
     </div>
   );
 };

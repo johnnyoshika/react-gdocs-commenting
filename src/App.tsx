@@ -27,15 +27,17 @@ const AppLayout = () => {
               }
             >
               {messages.map(message => (
-                <MessageBox key={message.id} message={message}>
-                  <CommentableContainer
-                    containerId={message.id}
-                    markdown={message.content}
+                <CommentableContainer
+                  key={message.id}
+                  containerId={message.id}
+                >
+                  <MessageBox
+                    message={message}
                     comments={comments.filter(
                       c => c.messageId === message.id,
                     )}
                   />
-                </MessageBox>
+                </CommentableContainer>
               ))}
             </CommentableSection>
           </div>
