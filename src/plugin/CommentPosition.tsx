@@ -29,6 +29,7 @@ const CommentPosition = ({
     if (!commentRef.current) return;
 
     const resizeObserver = new ResizeObserver(entries => {
+      console.count(comment.id);
       for (let entry of entries) {
         updateCommentSize(comment.id, {
           height: entry.contentRect.height,
@@ -51,6 +52,7 @@ const CommentPosition = ({
       style={{
         position: 'absolute',
         top: `${adjustedTop - commentsSectionOffsetY}px`,
+        transition: 'top 0.3s ease-out',
         left: 0,
         width: '100%',
       }}
