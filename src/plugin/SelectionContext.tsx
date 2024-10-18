@@ -26,8 +26,8 @@ const SelectionContext = createContext<
       setCommentableSectionOffsetY: (offsetY: number) => void;
       commentsSectionOffsetY: number;
       setCommentsSectionOffsetY: (offsetY: number) => void;
-      showCommentBox: boolean;
-      setShowCommentBox: (show: boolean) => void;
+      showNewCommentBox: boolean;
+      setShowNewCommentBox: (show: boolean) => void;
       positions: CommentPositions;
       setPositions: React.Dispatch<
         React.SetStateAction<CommentPositions>
@@ -48,7 +48,7 @@ export const SelectionProvider = ({
     useState(0);
   const [commentsSectionOffsetY, setCommentsSectionOffsetY] =
     useState(0);
-  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [showNewCommentBox, setShowNewCommentBox] = useState(false);
   const [selectedText, setSelectedText] = useState<
     TextSelectionPosition | undefined
   >();
@@ -67,8 +67,8 @@ export const SelectionProvider = ({
       setCommentableSectionOffsetY,
       commentsSectionOffsetY,
       setCommentsSectionOffsetY,
-      showCommentBox,
-      setShowCommentBox,
+      showNewCommentBox,
+      setShowNewCommentBox,
       positions,
       setPositions,
       comments,
@@ -81,8 +81,8 @@ export const SelectionProvider = ({
       setCommentableSectionOffsetY,
       commentsSectionOffsetY,
       setCommentsSectionOffsetY,
-      showCommentBox,
-      setShowCommentBox,
+      showNewCommentBox,
+      setShowNewCommentBox,
       positions,
       setPositions,
       comments,

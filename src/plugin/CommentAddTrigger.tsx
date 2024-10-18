@@ -5,11 +5,11 @@ const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
   const {
     selectedText,
     commentableSectionOffsetY,
-    setShowCommentBox,
+    setShowNewCommentBox,
   } = useSelectionContext();
 
   const handleAddComment = () => {
-    setShowCommentBox(true);
+    setShowNewCommentBox(true);
   };
 
   if (!selectedText) return null;

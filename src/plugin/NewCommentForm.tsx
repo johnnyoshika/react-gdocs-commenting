@@ -12,8 +12,8 @@ const NewCommentForm = ({
   const {
     selectedText,
     setSelectedText,
-    setShowCommentBox,
-    showCommentBox,
+    setShowNewCommentBox,
+    showNewCommentBox,
   } = useSelectionContext();
 
   const submitComment = () => {
@@ -27,7 +27,7 @@ const NewCommentForm = ({
     if (!commentText) return;
 
     handleAddComment(commentText, selectedText);
-    setShowCommentBox(false);
+    setShowNewCommentBox(false);
     setSelectedText(undefined);
     form.reset();
   };
@@ -48,7 +48,7 @@ const NewCommentForm = ({
     }
   };
 
-  if (!showCommentBox) return null;
+  if (!showNewCommentBox) return null;
 
   return (
     <form
