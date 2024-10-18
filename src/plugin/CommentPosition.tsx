@@ -1,8 +1,9 @@
 // CommentPosition.tsx
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Comment } from './types';
 import { useSelectionContext } from './SelectionContext';
 import { useCommentPosition } from './CommentPositionContext';
+import { debounce } from 'lodash';
 
 const CommentPosition = ({
   children,
@@ -20,20 +21,32 @@ const CommentPosition = ({
   } = useCommentPosition();
   const commentRef = useRef<HTMLDivElement>(null);
 
+  const debouncedUpdateSize = useCallback(
+    debounce((id: string, height: number) => {
+      updateCommentSize(id, { height });
+    }, 50),
+    [updateCommentSize],
+  );
+
   useEffect(() => {
     registerComment(comment.id);
-    return () => unregisterComment(comment.id);
-  }, [comment.id, registerComment, unregisterComment]);
+    return () => {
+      unregisterComment(comment.id);
+      debouncedUpdateSize.cancel();
+    };
+  }, [
+    comment.id,
+    registerComment,
+    unregisterComment,
+    debouncedUpdateSize,
+  ]);
 
   useEffect(() => {
     if (!commentRef.current) return;
 
     const resizeObserver = new ResizeObserver(entries => {
-      console.count(comment.id);
       for (let entry of entries) {
-        updateCommentSize(comment.id, {
-          height: entry.contentRect.height,
-        });
+        debouncedUpdateSize(comment.id, entry.contentRect.height);
       }
     });
 
@@ -42,7 +55,7 @@ const CommentPosition = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [comment.id, updateCommentSize]);
+  }, [comment.id, debouncedUpdateSize]);
 
   const adjustedTop = getAdjustedTop(comment.id);
 
