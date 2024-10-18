@@ -87,6 +87,16 @@ const App = () => {
             endOffset: 423,
           },
         },
+        {
+          id: 'mmkrq4fgkj',
+          messageId: '3',
+          text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu ligula eget enim mollis tincidunt. Proin facilisis odio lectus, at pellentesque mi egestas quis. In hac habitasse platea dictumst. ',
+          selection: {
+            startOffset: 251,
+            endOffset: 292,
+            containerId: '3',
+          },
+        },
       ]}
     >
       <AppLayout />
