@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
 import { findNodeAndOffsetFromTotalOffset } from './utils';
 import { CommentPositions } from './types';
-import CommentAddTrigger from './CommentAddTrigger';
+import NewCommentTrigger from './NewCommentTrigger';
 
 import './styles.css';
 
@@ -96,7 +96,7 @@ const CommentableSection = ({
   return (
     <div ref={sectionRef} style={{ position: 'relative' }}>
       {children}
-      <CommentAddTrigger>{addButton}</CommentAddTrigger>
+      <NewCommentTrigger>{addButton}</NewCommentTrigger>
     </div>
   );
 };

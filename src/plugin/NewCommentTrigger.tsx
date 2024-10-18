@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { useSelectionContext } from './SelectionContext';
 
-const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
+const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
   const {
     selectedText,
     commentableSectionOffsetY,
@@ -30,4 +30,4 @@ const CommentAddTrigger = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default CommentAddTrigger;
+export default NewCommentTrigger;
