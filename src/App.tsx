@@ -72,6 +72,7 @@ const App = () => {
           messageId: '3',
           text: 'First comment',
           selection: {
+            containerId: '3',
             startOffset: 108,
             endOffset: 130,
           },
@@ -81,6 +82,7 @@ const App = () => {
           messageId: '3',
           text: 'Another comment',
           selection: {
+            containerId: '3',
             startOffset: 325,
             endOffset: 423,
           },

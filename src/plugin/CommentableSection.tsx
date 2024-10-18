@@ -14,10 +14,15 @@ const CommentableSection = ({
   children: ReactNode;
   addButton: ReactNode;
 }) => {
+  const timerRef = useRef<number>();
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const { comments, setContentOffsetY, setPositions } =
-    useSelectionContext();
+  const {
+    commentableContainers,
+    comments,
+    setContentOffsetY,
+    setPositions,
+  } = useSelectionContext();
 
   const setOffset = useCallback(() => {
     if (!sectionRef.current) return;
@@ -28,17 +33,25 @@ const CommentableSection = ({
   }, [setContentOffsetY]);
 
   const reposition = useCallback(() => {
-    if (!sectionRef.current) return;
-
     setOffset();
+
+    if (!commentableContainers.current) return;
+
     setPositions(
       comments.reduce((acc, comment) => {
+        const containerRef =
+          commentableContainers.current[
+            comment.selection.containerId
+          ];
+
+        if (!containerRef?.current) return { ...acc };
+
         const startPosition = findNodeAndOffsetFromTotalOffset(
-          sectionRef.current!,
+          containerRef.current,
           comment.selection.startOffset,
         );
         const endPosition = findNodeAndOffsetFromTotalOffset(
-          sectionRef.current!,
+          containerRef.current,
           comment.selection.endOffset,
         );
 
@@ -64,12 +77,16 @@ const CommentableSection = ({
   }, [comments, setPositions, setOffset]);
 
   useEffect(() => {
-    // Initial call to set correct positions
-    reposition();
+    // Initial call to set correct positions.
+    // Hack: markdown gets render asynchronously, so we need to wait 1 second.
+    timerRef.current = window.setTimeout(() => {
+      reposition();
+    }, 100);
 
     const debouncedReposition = debounce(reposition, 250);
     window.addEventListener('resize', debouncedReposition);
     return () => {
+      window.clearTimeout(timerRef.current);
       window.removeEventListener('resize', debouncedReposition);
       debouncedReposition.cancel(); // Cancel any pending debounced calls
     };

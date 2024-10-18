@@ -1,10 +1,10 @@
 export interface TextSelection {
+  containerId: string;
   startOffset: number;
   endOffset: number;
 }
 
 export interface TextSelectionPosition extends TextSelection {
-  containerId: string;
   positionTop: number;
 }
 

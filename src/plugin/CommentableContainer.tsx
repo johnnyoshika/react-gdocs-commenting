@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSelectionContext } from './SelectionContext';
 import { getOffsetInTextContent } from './utils';
 import { Comment } from './types';
@@ -15,7 +15,15 @@ const CommentableContainer = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { setSelectedText } = useSelectionContext();
+  const { setSelectedText, commentableContainers } =
+    useSelectionContext();
+
+  useEffect(() => {
+    commentableContainers.current[containerId] = containerRef;
+    return () => {
+      delete commentableContainers.current[containerId];
+    };
+  }, []);
 
   const handleTextSelection = () => {
     if (!containerRef.current) return;

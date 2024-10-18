@@ -1,14 +1,11 @@
 import { useRef, KeyboardEvent } from 'react';
 import { useSelectionContext } from './SelectionContext';
-import { TextSelectionPosition } from './types';
+import { TextSelection } from './types';
 
 const NewCommentForm = ({
   handleAddComment,
 }: {
-  handleAddComment: (
-    text: string,
-    selection: TextSelectionPosition,
-  ) => void;
+  handleAddComment: (text: string, selection: TextSelection) => void;
 }) => {
   const commentFormRef = useRef<HTMLFormElement>(null);
 

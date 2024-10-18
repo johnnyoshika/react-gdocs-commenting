@@ -4,6 +4,7 @@ import {
   ReactNode,
   useContext,
   useMemo,
+  useRef,
 } from 'react';
 import type {
   CommentPositions,
@@ -13,6 +14,9 @@ import type {
 
 const SelectionContext = createContext<
   | {
+      commentableContainers: React.MutableRefObject<
+        Partial<Record<string, React.RefObject<HTMLDivElement>>>
+      >;
       selectedText: TextSelectionPosition | undefined;
       setSelectedText: (
         selection: TextSelectionPosition | undefined,
@@ -47,8 +51,13 @@ export const SelectionProvider = ({
   >();
   const [positions, setPositions] = useState<CommentPositions>({});
 
+  const commentableContainers = useRef<
+    Record<string, React.RefObject<HTMLDivElement>>
+  >({});
+
   const value = useMemo(
     () => ({
+      commentableContainers,
       selectedText,
       setSelectedText,
       contentOffsetY,
@@ -62,6 +71,7 @@ export const SelectionProvider = ({
       comments,
     }),
     [
+      commentableContainers,
       selectedText,
       setSelectedText,
       contentOffsetY,
