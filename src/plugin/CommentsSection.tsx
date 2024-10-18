@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
-import { TextSelection } from './types';
+import { TextSelectionPosition } from './types';
 import NewCommentForm from './NewCommentForm';
 
 const CommentsSection = ({
@@ -10,9 +10,8 @@ const CommentsSection = ({
 }: {
   children: ReactNode;
   handleAddComment: (
-    containerId: string,
     text: string,
-    selection: TextSelection,
+    selection: TextSelectionPosition,
   ) => void;
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);

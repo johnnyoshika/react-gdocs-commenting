@@ -41,10 +41,10 @@ const AppLayout = () => {
           </div>
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection
-              handleAddComment={(containerId, text, selection) =>
+              handleAddComment={(text, selection) =>
                 addComment({
                   id: Math.random().toString(36).substring(2, 12),
-                  messageId: containerId,
+                  messageId: selection.containerId,
                   text,
                   selection,
                 })
@@ -68,19 +68,21 @@ const App = () => {
     <CommentsContext
       initialComments={[
         {
-          id: 'djy8is63fm',
-          text: 'This is a comment',
+          id: 'w2s3xszzhw',
+          messageId: '3',
+          text: 'First comment',
           selection: {
-            startOffset: 446,
-            endOffset: 508,
+            startOffset: 108,
+            endOffset: 130,
           },
         },
         {
-          id: 't7zeflkqk6',
-          text: 'Privacy comment',
+          id: 'kjpvtk8y2m',
+          messageId: '3',
+          text: 'Another comment',
           selection: {
-            startOffset: 688,
-            endOffset: 707,
+            startOffset: 325,
+            endOffset: 423,
           },
         },
       ]}

@@ -4,7 +4,7 @@ export interface TextSelection {
 }
 
 export interface TextSelectionPosition extends TextSelection {
-  containerId: string | undefined;
+  containerId: string;
   positionTop: number;
 }
 

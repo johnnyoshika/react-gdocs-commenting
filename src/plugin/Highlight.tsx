@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Comment } from './types';
+import { marked } from 'marked';
+import parse from 'html-react-parser';
 
 const Highlight = ({
   markdown,
@@ -8,7 +10,25 @@ const Highlight = ({
   markdown: string;
   comments: Comment[];
 }) => {
-  const result = processChildren(children, 0, comments);
+  const [result, setResult] = useState<{ node: React.ReactNode }>({
+    node: null,
+  });
+
+  useEffect(() => {
+    const processMarkdown = async () => {
+      const htmlContent = await marked(markdown);
+      const reactElements = parse(htmlContent);
+      const result = processChildren(reactElements, 0, comments);
+      setResult(result);
+    };
+
+    processMarkdown();
+  }, [
+    setResult,
+    markdown,
+    comments, // Dangerous, as comments will change on every render - need to memoize
+  ]);
+
   return <>{result.node}</>;
 };
 
