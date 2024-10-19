@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useSelectionContext } from './SelectionContext';
 import { TextSelection } from './types';
-import NewCommentForm from './NewCommentForm';
+import NewComment from './NewComment';
 import { CommentPositionProvider } from './CommentPositionContext';
 
 const CommentsSection = ({
@@ -14,8 +14,11 @@ const CommentsSection = ({
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const { setCommentsSectionOffsetY: setCommentsOffsetY } =
-    useSelectionContext();
+  const {
+    showNewCommentBox,
+    selectedText,
+    setCommentsSectionOffsetY: setCommentsOffsetY,
+  } = useSelectionContext();
 
   const setOffset = useCallback(() => {
     if (!sectionRef.current) return;
@@ -40,7 +43,7 @@ const CommentsSection = ({
   return (
     <CommentPositionProvider>
       <div ref={sectionRef} style={{ position: 'relative' }}>
-        <NewCommentForm handleAddComment={handleAddComment} />
+        <NewComment handleAddComment={handleAddComment} />
         {children}
       </div>
     </CommentPositionProvider>

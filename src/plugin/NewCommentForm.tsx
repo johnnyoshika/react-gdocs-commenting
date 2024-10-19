@@ -3,21 +3,18 @@ import { useSelectionContext } from './SelectionContext';
 import { TextSelection } from './types';
 
 const NewCommentForm = ({
+  selectedText,
   handleAddComment,
 }: {
+  selectedText: TextSelection;
   handleAddComment: (text: string, selection: TextSelection) => void;
 }) => {
   const commentFormRef = useRef<HTMLFormElement>(null);
 
-  const {
-    selectedText,
-    setSelectedText,
-    setShowNewCommentBox,
-    showNewCommentBox,
-  } = useSelectionContext();
+  const { setShowNewCommentBox } = useSelectionContext();
 
   const submitComment = () => {
-    if (!commentFormRef.current || !selectedText) return;
+    if (!commentFormRef.current) return;
 
     const form = commentFormRef.current;
     const commentText = (
@@ -28,7 +25,6 @@ const NewCommentForm = ({
 
     handleAddComment(commentText, selectedText);
     setShowNewCommentBox(false);
-    setSelectedText(undefined);
     form.reset();
   };
 
@@ -48,14 +44,8 @@ const NewCommentForm = ({
     }
   };
 
-  if (!showNewCommentBox) return null;
-
   return (
-    <form
-      ref={commentFormRef}
-      onSubmit={handleCommentSubmit}
-      className="mt-4"
-    >
+    <form ref={commentFormRef} onSubmit={handleCommentSubmit}>
       <textarea
         name="comment"
         placeholder="Add a comment"

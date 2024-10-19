@@ -19,6 +19,7 @@ type CommentPositionContextType = {
   unregisterComment: (id: string) => void;
   getAdjustedTop: (id: string) => number;
   updateCommentSize: (id: string, size: CommentSize) => void;
+  setNewCommentPosition: (position: number | null) => void;
 };
 
 const CommentPositionContext = createContext<
@@ -40,11 +41,22 @@ export const CommentPositionProvider = ({
     Record<string, number>
   >({});
   const { positions } = useSelectionContext();
+  const [newCommentPosition, setNewCommentPosition] = useState<
+    number | null
+  >(null);
 
   const updatePositions = useCallback(() => {
-    const activePositions = Object.entries(positions)
-      .filter(([id]) => activeComments.has(id))
-      .sort(([, a], [, b]) => a.top - b.top);
+    let activePositions = Object.entries(positions).filter(([id]) =>
+      activeComments.has(id),
+    );
+
+    if (newCommentPosition !== null) {
+      activePositions.push(['new', { top: newCommentPosition }]);
+    }
+
+    activePositions = activePositions.sort(
+      ([, a], [, b]) => a.top - b.top,
+    );
 
     let currentTop = 0;
     const newPositions: Record<string, number> = {};
@@ -58,7 +70,7 @@ export const CommentPositionProvider = ({
     });
 
     setAdjustedPositions(newPositions);
-  }, [positions, activeComments, commentSizes]);
+  }, [positions, activeComments, commentSizes, newCommentPosition]);
 
   useEffect(() => {
     updatePositions();
@@ -104,12 +116,14 @@ export const CommentPositionProvider = ({
       unregisterComment,
       getAdjustedTop,
       updateCommentSize,
+      setNewCommentPosition,
     }),
     [
       registerComment,
       unregisterComment,
       getAdjustedTop,
       updateCommentSize,
+      setNewCommentPosition,
     ],
   );
 
