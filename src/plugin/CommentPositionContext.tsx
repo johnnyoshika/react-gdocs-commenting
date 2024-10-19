@@ -134,11 +134,11 @@ export const CommentPositionProvider = ({
   );
 };
 
-export const useCommentPosition = () => {
+export const useCommentPositionContext = () => {
   const context = useContext(CommentPositionContext);
   if (!context) {
     throw new Error(
-      'useCommentPosition must be used within a CommentPositionProvider',
+      'useCommentPositionContext must be used within a CommentPositionProvider',
     );
   }
   return context;

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { TextSelection } from './types';
 import CommentPosition from './CommentPosition';
 import NewCommentForm from './NewCommentForm';
-import { useCommentPosition } from './CommentPositionContext';
+import { useCommentPositionContext } from './CommentPositionContext';
 import { useSelectionContext } from './SelectionContext';
 
 const NewComment = ({
@@ -11,7 +11,7 @@ const NewComment = ({
   handleAddComment: (text: string, selection: TextSelection) => void;
 }) => {
   const { selectedText, showNewCommentBox } = useSelectionContext();
-  const { setNewCommentPosition } = useCommentPosition();
+  const { setNewCommentPosition } = useCommentPositionContext();
 
   useEffect(() => {
     if (selectedText && showNewCommentBox) {

@@ -2,7 +2,7 @@
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Comment } from './types';
 import { useSelectionContext } from './SelectionContext';
-import { useCommentPosition } from './CommentPositionContext';
+import { useCommentPositionContext } from './CommentPositionContext';
 import { debounce } from 'lodash';
 
 const CommentPosition = ({
@@ -18,7 +18,7 @@ const CommentPosition = ({
     unregisterComment,
     getAdjustedTop,
     updateCommentSize,
-  } = useCommentPosition();
+  } = useCommentPositionContext();
   const commentRef = useRef<HTMLDivElement>(null);
 
   const debouncedUpdateSize = useCallback(
