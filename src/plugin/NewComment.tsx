@@ -28,6 +28,7 @@ const NewComment = ({
   return (
     <CommentPosition
       comment={{ id: NEW_COMMENT_ID, selection: selectedText }}
+      transition={false}
     >
       <NewCommentForm
         selectedText={selectedText}

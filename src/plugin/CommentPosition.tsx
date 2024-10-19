@@ -1,16 +1,18 @@
 // CommentPosition.tsx
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
-import { Comment } from './types';
-import { useSelectionContext } from './SelectionContext';
-import { useCommentPositionContext } from './CommentPositionContext';
 import { debounce } from 'lodash';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import { useCommentPositionContext } from './CommentPositionContext';
+import { useSelectionContext } from './SelectionContext';
+import { Comment } from './types';
 
 const CommentPosition = ({
   children,
   comment,
+  transition = true,
 }: {
   children: ReactNode;
   comment: Comment;
+  transition?: boolean;
 }) => {
   const { commentsSectionOffsetY } = useSelectionContext();
   const {
@@ -65,7 +67,7 @@ const CommentPosition = ({
       style={{
         position: 'absolute',
         top: `${adjustedTop - commentsSectionOffsetY}px`,
-        transition: 'top 0.3s ease-out',
+        transition: transition ? 'top 0.3s ease-out' : 'none',
         left: 0,
         width: '100%',
       }}
