@@ -14,11 +14,8 @@ const CommentsSection = ({
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const {
-    showNewCommentBox,
-    selectedText,
-    setCommentsSectionOffsetY: setCommentsOffsetY,
-  } = useSelectionContext();
+  const { setCommentsSectionOffsetY: setCommentsOffsetY } =
+    useSelectionContext();
 
   const setOffset = useCallback(() => {
     if (!sectionRef.current) return;
