@@ -1,9 +1,11 @@
+// NewComment.tsx
 import { useEffect } from 'react';
-import { TextSelection } from './types';
 import CommentPosition from './CommentPosition';
-import NewCommentForm from './NewCommentForm';
 import { useCommentPositionContext } from './CommentPositionContext';
+import { NEW_COMMENT_ID } from './constants';
+import NewCommentForm from './NewCommentForm';
 import { useSelectionContext } from './SelectionContext';
+import { TextSelection } from './types';
 
 const NewComment = ({
   handleAddComment,
@@ -24,7 +26,9 @@ const NewComment = ({
   if (!selectedText || !showNewCommentBox) return null;
 
   return (
-    <CommentPosition comment={{ id: 'new', selection: selectedText }}>
+    <CommentPosition
+      comment={{ id: NEW_COMMENT_ID, selection: selectedText }}
+    >
       <NewCommentForm
         selectedText={selectedText}
         handleAddComment={handleAddComment}

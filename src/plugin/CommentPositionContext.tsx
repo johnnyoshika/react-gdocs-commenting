@@ -1,14 +1,15 @@
 // CommentPositionContext.tsx
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
   ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import { useSelectionContext } from './SelectionContext';
+import { COMMENT_OVERLAP_GAP, NEW_COMMENT_ID } from './constants';
 
 type CommentSize = {
   height: number;
@@ -51,7 +52,10 @@ export const CommentPositionProvider = ({
     );
 
     if (newCommentPosition !== null) {
-      activePositions.push(['new', { top: newCommentPosition }]);
+      activePositions.push([
+        NEW_COMMENT_ID,
+        { top: newCommentPosition },
+      ]);
     }
 
     activePositions = activePositions.sort(
@@ -66,7 +70,8 @@ export const CommentPositionProvider = ({
         currentTop = position.top;
       }
       newPositions[id] = currentTop;
-      currentTop += (commentSizes[id]?.height || 0) + 10; // 10px gap between comments
+      currentTop +=
+        (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
     });
 
     setAdjustedPositions(newPositions);
