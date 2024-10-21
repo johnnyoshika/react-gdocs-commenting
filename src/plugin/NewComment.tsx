@@ -1,18 +1,24 @@
 // NewComment.tsx
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import CommentPosition from './CommentPosition';
 import { useCommentPositionContext } from './CommentPositionContext';
 import { NEW_COMMENT_ID } from './constants';
-import NewCommentForm from './NewCommentForm';
 import { useSelectionContext } from './SelectionContext';
 import { TextSelection } from './types';
 
 const NewComment = ({
-  handleAddComment,
+  children,
 }: {
-  handleAddComment: (text: string, selection: TextSelection) => void;
+  children: ({
+    selectedText,
+    setShowNewCommentBox,
+  }: {
+    selectedText: TextSelection;
+    setShowNewCommentBox: (show: boolean) => void;
+  }) => ReactNode;
 }) => {
-  const { selectedText, showNewCommentBox } = useSelectionContext();
+  const { selectedText, showNewCommentBox, setShowNewCommentBox } =
+    useSelectionContext();
   const { setNewCommentPosition } = useCommentPositionContext();
 
   useEffect(() => {
@@ -30,10 +36,7 @@ const NewComment = ({
       comment={{ id: NEW_COMMENT_ID, selection: selectedText }}
       transition={false}
     >
-      <NewCommentForm
-        selectedText={selectedText}
-        handleAddComment={handleAddComment}
-      />
+      {children({ selectedText, setShowNewCommentBox })}
     </CommentPosition>
   );
 };

@@ -1,14 +1,16 @@
-import { messages } from './data';
 import CommentBox from './CommentBox';
-import CommentsSection from './plugin/CommentsSection';
-import CommentableSection from './plugin/CommentableSection';
-import MessageBox from './MessageBox';
 import CommentsContext, {
   useCommentsContext,
 } from './CommentsContext';
-import { SelectionProvider } from './plugin/SelectionContext';
+import MessageBox from './MessageBox';
+import NewCommentForm from './NewCommentForm';
+import { messages } from './data';
 import CommentPosition from './plugin/CommentPosition';
 import CommentableContainer from './plugin/CommentableContainer';
+import CommentableSection from './plugin/CommentableSection';
+import CommentsSection from './plugin/CommentsSection';
+import NewComment from './plugin/NewComment';
+import { SelectionProvider } from './plugin/SelectionContext';
 
 const AppLayout = () => {
   const { comments, addComment } = useCommentsContext();
@@ -42,16 +44,24 @@ const AppLayout = () => {
             </CommentableSection>
           </div>
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
-            <CommentsSection
-              handleAddComment={(text, selection) =>
-                addComment({
-                  id: Math.random().toString(36).substring(2, 12),
-                  messageId: selection.containerId,
-                  text,
-                  selection,
-                })
-              }
-            >
+            <CommentsSection>
+              <NewComment>
+                {({ selectedText, setShowNewCommentBox }) => (
+                  <NewCommentForm
+                    handleAddComment={text =>
+                      addComment({
+                        id: Math.random()
+                          .toString(36)
+                          .substring(2, 12),
+                        messageId: selectedText.containerId,
+                        text,
+                        selection: selectedText,
+                      })
+                    }
+                    setShowNewCommentBox={setShowNewCommentBox}
+                  />
+                )}
+              </NewComment>
               {comments.map(comment => (
                 <CommentPosition key={comment.id} comment={comment}>
                   <CommentBox comment={comment} />

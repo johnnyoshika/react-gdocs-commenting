@@ -1,17 +1,13 @@
-import { useRef, KeyboardEvent } from 'react';
-import { useSelectionContext } from './SelectionContext';
-import { TextSelection } from './types';
+import { KeyboardEvent, useRef } from 'react';
 
 const NewCommentForm = ({
-  selectedText,
   handleAddComment,
+  setShowNewCommentBox,
 }: {
-  selectedText: TextSelection;
-  handleAddComment: (text: string, selection: TextSelection) => void;
+  handleAddComment: (text: string) => void;
+  setShowNewCommentBox: (show: boolean) => void;
 }) => {
   const commentFormRef = useRef<HTMLFormElement>(null);
-
-  const { setShowNewCommentBox } = useSelectionContext();
 
   const submitComment = () => {
     if (!commentFormRef.current) return;
@@ -23,7 +19,7 @@ const NewCommentForm = ({
 
     if (!commentText) return;
 
-    handleAddComment(commentText, selectedText);
+    handleAddComment(commentText);
     setShowNewCommentBox(false);
     form.reset();
   };

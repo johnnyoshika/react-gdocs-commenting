@@ -1,17 +1,9 @@
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
-import { useSelectionContext } from './SelectionContext';
-import { TextSelection } from './types';
-import NewComment from './NewComment';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { CommentPositionProvider } from './CommentPositionContext';
+import { useSelectionContext } from './SelectionContext';
 
-const CommentsSection = ({
-  children,
-  handleAddComment,
-}: {
-  children: ReactNode;
-  handleAddComment: (text: string, selection: TextSelection) => void;
-}) => {
+const CommentsSection = ({ children }: { children: ReactNode }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const { setCommentsSectionOffsetY: setCommentsOffsetY } =
@@ -40,7 +32,6 @@ const CommentsSection = ({
   return (
     <CommentPositionProvider>
       <div ref={sectionRef} style={{ position: 'relative' }}>
-        <NewComment handleAddComment={handleAddComment} />
         {children}
       </div>
     </CommentPositionProvider>
