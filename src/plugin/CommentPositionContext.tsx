@@ -9,8 +9,8 @@ import {
   useState,
 } from 'react';
 import { useSelectionContext } from './SelectionContext';
-import { COMMENT_OVERLAP_GAP, NEW_COMMENT_ID } from './constants';
-import { CommentPositions } from './types';
+import { COMMENT_OVERLAP_GAP } from './constants';
+import { CommentPositions, CommentPositionState } from './types';
 
 type CommentSize = {
   height: number;
@@ -24,80 +24,62 @@ type CommentPositionContextType = {
   setNewCommentPosition: (position: number | null) => void;
 };
 
-const calculatePositionsWithoutNewComment = (
-  positions: CommentPositions,
-  activeComments: Set<string>,
+const calculatePositions = (
+  state: CommentPositionState,
+  visibleComments: Set<string>,
   commentSizes: Record<string, CommentSize>,
-): Record<string, number> => {
-  const newPositions: Record<string, number> = {};
+): CommentPositions => {
+  const { positions, activeCommentId } = state;
+  const newPositions: CommentPositions = {};
 
-  // Get active comments (excluding the new comment)
-  const activePositions = Object.entries(positions)
-    .filter(([id]) => activeComments.has(id) && id !== NEW_COMMENT_ID)
+  const sortedComments = Object.entries(positions)
+    .filter(([id]) => visibleComments.has(id))
     .sort(([, a], [, b]) => a.top - b.top);
 
-  let currentTop = 0;
-  activePositions.forEach(([id, position]) => {
-    if (position.top > currentTop) {
-      currentTop = position.top;
+  if (activeCommentId) {
+    const activeCommentIndex = sortedComments.findIndex(
+      ([id]) => id === activeCommentId,
+    );
+    const activeCommentTop = positions[activeCommentId].top;
+
+    // Position comments above the active comment
+    let currentTop = activeCommentTop;
+    for (let i = activeCommentIndex - 1; i >= 0; i--) {
+      const [id] = sortedComments[i];
+      const commentHeight = commentSizes[id]?.height || 0;
+      currentTop -= commentHeight + COMMENT_OVERLAP_GAP;
+      newPositions[id] = { top: currentTop };
     }
-    newPositions[id] = currentTop;
-    currentTop +=
-      (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
-  });
 
-  return newPositions;
-};
+    // Position the active comment
+    newPositions[activeCommentId] = { top: activeCommentTop };
 
-const calculatePositionsWithNewComment = (
-  positions: CommentPositions,
-  activeComments: Set<string>,
-  commentSizes: Record<string, CommentSize>,
-  newCommentPosition: number,
-): Record<string, number> => {
-  const newPositions: Record<string, number> = {};
-
-  // Set the new comment position
-  newPositions[NEW_COMMENT_ID] = newCommentPosition;
-
-  // Get active comments (excluding the new comment)
-  const activePositions = Object.entries(positions).filter(
-    ([id]) => activeComments.has(id) && id !== NEW_COMMENT_ID,
-  );
-
-  const commentsAbove: Array<[string, { top: number }]> = [];
-  const commentsBelow: Array<[string, { top: number }]> = [];
-
-  // Separate comments into above and below the new comment
-  activePositions.forEach(([id, position]) => {
-    if (position.top < newCommentPosition!) {
-      commentsAbove.push([id, position]);
-    } else {
-      commentsBelow.push([id, position]);
+    // Position comments below the active comment
+    currentTop =
+      activeCommentTop +
+      (commentSizes[activeCommentId]?.height || 0) +
+      COMMENT_OVERLAP_GAP;
+    for (
+      let i = activeCommentIndex + 1;
+      i < sortedComments.length;
+      i++
+    ) {
+      const [id] = sortedComments[i];
+      newPositions[id] = { top: currentTop };
+      currentTop +=
+        (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
     }
-  });
-
-  // Sort comments above and below
-  commentsAbove.sort(([, a], [, b]) => b.top - a.top); // From bottom to top
-  commentsBelow.sort(([, a], [, b]) => a.top - b.top); // From top to bottom
-
-  // Position comments above the new comment
-  let currentTop = newCommentPosition!;
-  for (const [id] of commentsAbove) {
-    const commentHeight = commentSizes[id]?.height || 0;
-    currentTop -= commentHeight + 10; // 10px gap
-    newPositions[id] = currentTop;
-  }
-
-  // Position comments below the new comment
-  currentTop =
-    newCommentPosition! +
-    (commentSizes[NEW_COMMENT_ID]?.height || 0) +
-    COMMENT_OVERLAP_GAP;
-  for (const [id, position] of commentsBelow) {
-    currentTop = Math.max(currentTop, position.top);
-    newPositions[id] = currentTop;
-    currentTop += (commentSizes[id]?.height || 0) + 10;
+  } else {
+    // If no active comment, use the original positioning logic
+    let currentTop = 0;
+    sortedComments.forEach(([id, position]) => {
+      if (position.top > currentTop) {
+        currentTop = position.top;
+      }
+      newPositions[id] = { top: currentTop };
+      currentTop +=
+        (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
+    });
   }
 
   return newPositions;
@@ -112,56 +94,38 @@ export const CommentPositionProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [activeComments, setActiveComments] = useState<Set<string>>(
+  const [visibleComments, setVisibleComments] = useState<Set<string>>(
     new Set(),
   );
   const [commentSizes, setCommentSizes] = useState<
     Record<string, CommentSize>
   >({});
-  const [adjustedPositions, setAdjustedPositions] = useState<
-    Record<string, number>
-  >({});
-  const { positions } = useSelectionContext();
+  const [adjustedPositions, setAdjustedPositions] =
+    useState<CommentPositions>({});
+  const { commentPositionState } = useSelectionContext();
   const [newCommentPosition, setNewCommentPosition] = useState<
     number | null
   >(null);
 
   const updatePositions = useCallback(() => {
-    let newPositions: Record<string, number> =
-      newCommentPosition === null
-        ? calculatePositionsWithoutNewComment(
-            positions,
-            activeComments,
-            commentSizes,
-          )
-        : calculatePositionsWithNewComment(
-            positions,
-            activeComments,
-            commentSizes,
-            newCommentPosition,
-          );
-
+    const newPositions = calculatePositions(
+      commentPositionState,
+      visibleComments,
+      commentSizes,
+    );
     setAdjustedPositions(newPositions);
-  }, [
-    positions,
-    newCommentPosition,
-    activeComments,
-    commentSizes,
-    calculatePositionsWithNewComment,
-    calculatePositionsWithoutNewComment,
-    setAdjustedPositions,
-  ]);
+  }, [commentPositionState, visibleComments, commentSizes]);
 
   useEffect(() => {
     updatePositions();
   }, [updatePositions]);
 
   const registerComment = useCallback((id: string) => {
-    setActiveComments(prev => new Set(prev).add(id));
+    setVisibleComments(prev => new Set(prev).add(id));
   }, []);
 
   const unregisterComment = useCallback((id: string) => {
-    setActiveComments(prev => {
+    setVisibleComments(prev => {
       const newSet = new Set(prev);
       newSet.delete(id);
       return newSet;
@@ -186,8 +150,11 @@ export const CommentPositionProvider = ({
   );
 
   const getAdjustedTop = useCallback(
-    (id: string) => adjustedPositions[id] || positions[id]?.top || 0,
-    [adjustedPositions, positions],
+    (id: string) =>
+      adjustedPositions[id]?.top ??
+      commentPositionState.positions[id]?.top ??
+      0,
+    [adjustedPositions, commentPositionState],
   );
 
   const contextValue = useMemo(

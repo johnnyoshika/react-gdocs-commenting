@@ -14,3 +14,8 @@ export interface Comment {
 }
 
 export type CommentPositions = Record<string, { top: number }>;
+
+export interface CommentPositionState {
+  positions: CommentPositions;
+  activeCommentId: string | null;
+}

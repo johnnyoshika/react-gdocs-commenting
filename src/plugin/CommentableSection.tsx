@@ -22,7 +22,7 @@ const CommentableSection = ({
     commentableContainers,
     comments,
     setCommentableSectionOffsetY,
-    setPositions,
+    setCommentPositionState,
   } = useSelectionContext();
 
   const setOffset = useCallback(() => {
@@ -38,8 +38,9 @@ const CommentableSection = ({
 
     if (!commentableContainers.current) return;
 
-    setPositions(
-      comments.reduce((acc, comment) => {
+    setCommentPositionState(prev => ({
+      ...prev,
+      positions: comments.reduce((acc, comment) => {
         const containerRef =
           commentableContainers.current[
             comment.selectionRange.containerId
@@ -74,8 +75,8 @@ const CommentableSection = ({
           },
         };
       }, {} as CommentPositions),
-    );
-  }, [comments, setPositions, setOffset]);
+    }));
+  }, [comments, setCommentPositionState, setOffset]);
 
   useEffect(() => {
     // Initial call to set correct positions.
