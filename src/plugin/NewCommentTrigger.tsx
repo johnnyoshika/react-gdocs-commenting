@@ -1,18 +1,23 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useSelectionContext } from './SelectionContext';
+import { PositionedSelectionRange } from './types';
 
-const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
-  const {
-    positionedSelection,
-    commentableSectionOffsetY,
-    setShowNewCommentBox,
-  } = useSelectionContext();
+const NewCommentTriggerMount = ({
+  positionedSelection,
+  children,
+}: {
+  positionedSelection: PositionedSelectionRange;
+  children: ReactNode;
+}) => {
+  const { commentableSectionOffsetY, setShowNewCommentBox } =
+    useSelectionContext();
+
+  // Reset showNewCommentBox state so new comment box doesn't show automatically on text select
+  useEffect(() => setShowNewCommentBox(false), []);
 
   const handleClick = () => {
     setShowNewCommentBox(true);
   };
-
-  if (!positionedSelection) return null;
 
   return (
     <button
@@ -28,6 +33,18 @@ const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
     >
       {children}
     </button>
+  );
+};
+
+const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
+  const { positionedSelection } = useSelectionContext();
+
+  if (!positionedSelection) return null;
+
+  return (
+    <NewCommentTriggerMount positionedSelection={positionedSelection}>
+      {children}
+    </NewCommentTriggerMount>
   );
 };
 
