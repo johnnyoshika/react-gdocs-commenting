@@ -1,3 +1,4 @@
+import AddIcon from './AddIcon';
 import CommentBox from './CommentBox';
 import CommentsContext, {
   useCommentsContext,
@@ -21,13 +22,7 @@ const AppLayout = () => {
         <div className="max-w-6xl w-full flex">
           <div className="w-2/3 bg-white p-6 rounded-lg shadow-md mr-4 relative">
             <h2 className="text-2xl font-bold mb-4">AI Chat</h2>
-            <CommentableSection
-              addButton={
-                <span className="bg-blue-500 text-white p-2 rounded-full">
-                  +
-                </span>
-              }
-            >
+            <CommentableSection addIcon={<AddIcon />}>
               {messages.map(message => (
                 <CommentableContainer
                   key={message.id}
