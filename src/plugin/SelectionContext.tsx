@@ -1,16 +1,16 @@
 // SelectionContext.tsx
 import {
   createContext,
-  useState,
   ReactNode,
   useContext,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import type {
-  CommentPositions,
   Comment,
-  TextSelectionPosition,
+  CommentPositions,
+  PositionedSelectionRange,
 } from './types';
 
 const SelectionContext = createContext<
@@ -18,9 +18,9 @@ const SelectionContext = createContext<
       commentableContainers: React.MutableRefObject<
         Partial<Record<string, React.RefObject<HTMLDivElement>>>
       >;
-      selectedText: TextSelectionPosition | undefined;
-      setSelectedText: (
-        selection: TextSelectionPosition | undefined,
+      positionedSelection: PositionedSelectionRange | undefined;
+      setPositionedSelection: (
+        positionedSelection: PositionedSelectionRange | undefined,
       ) => void;
       commentableSectionOffsetY: number;
       setCommentableSectionOffsetY: (offsetY: number) => void;
@@ -49,8 +49,8 @@ export const SelectionProvider = ({
   const [commentsSectionOffsetY, setCommentsSectionOffsetY] =
     useState(0);
   const [showNewCommentBox, setShowNewCommentBox] = useState(false);
-  const [selectedText, setSelectedText] = useState<
-    TextSelectionPosition | undefined
+  const [positionedSelection, setPositionedSelection] = useState<
+    PositionedSelectionRange | undefined
   >();
   const [positions, setPositions] = useState<CommentPositions>({});
 
@@ -61,8 +61,8 @@ export const SelectionProvider = ({
   const value = useMemo(
     () => ({
       commentableContainers,
-      selectedText,
-      setSelectedText,
+      positionedSelection,
+      setPositionedSelection,
       commentableSectionOffsetY,
       setCommentableSectionOffsetY,
       commentsSectionOffsetY,
@@ -75,8 +75,8 @@ export const SelectionProvider = ({
     }),
     [
       commentableContainers,
-      selectedText,
-      setSelectedText,
+      positionedSelection,
+      setPositionedSelection,
       commentableSectionOffsetY,
       setCommentableSectionOffsetY,
       commentsSectionOffsetY,

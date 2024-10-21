@@ -4,39 +4,48 @@ import CommentPosition from './CommentPosition';
 import { useCommentPositionContext } from './CommentPositionContext';
 import { NEW_COMMENT_ID } from './constants';
 import { useSelectionContext } from './SelectionContext';
-import { TextSelection } from './types';
+import { PositionedSelectionRange } from './types';
 
 const NewComment = ({
   children,
 }: {
   children: ({
-    selectedText,
+    positionedSelection,
     setShowNewCommentBox,
   }: {
-    selectedText: TextSelection;
+    positionedSelection: PositionedSelectionRange;
     setShowNewCommentBox: (show: boolean) => void;
   }) => ReactNode;
 }) => {
-  const { selectedText, showNewCommentBox, setShowNewCommentBox } =
-    useSelectionContext();
+  const {
+    positionedSelection,
+    showNewCommentBox,
+    setShowNewCommentBox,
+  } = useSelectionContext();
   const { setNewCommentPosition } = useCommentPositionContext();
 
   useEffect(() => {
-    if (selectedText && showNewCommentBox) {
-      setNewCommentPosition(selectedText.positionTop);
+    if (positionedSelection && showNewCommentBox) {
+      setNewCommentPosition(positionedSelection.positionTop);
     } else {
       setNewCommentPosition(null);
     }
-  }, [selectedText, showNewCommentBox, setNewCommentPosition]);
+  }, [positionedSelection, showNewCommentBox, setNewCommentPosition]);
 
-  if (!selectedText || !showNewCommentBox) return null;
+  if (!positionedSelection || !showNewCommentBox) return null;
 
   return (
     <CommentPosition
-      comment={{ id: NEW_COMMENT_ID, selection: selectedText }}
+      comment={{
+        id: NEW_COMMENT_ID,
+        selectionRange: positionedSelection,
+      }}
       transition={false}
     >
-      {children({ selectedText, setShowNewCommentBox })}
+      {children({
+        positionedSelection,
+        setShowNewCommentBox,
+      })}
     </CommentPosition>
   );
 };

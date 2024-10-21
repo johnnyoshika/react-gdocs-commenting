@@ -1,19 +1,19 @@
 // CommentableSection.tsx
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
-import { useSelectionContext } from './SelectionContext';
-import { findNodeAndOffsetFromTotalOffset } from './utils';
-import { CommentPositions } from './types';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import NewCommentTrigger from './NewCommentTrigger';
+import { useSelectionContext } from './SelectionContext';
+import { CommentPositions } from './types';
+import { findNodeAndOffsetFromTotalOffset } from './utils';
 
 import './styles.css';
 
 const CommentableSection = ({
   children,
-  addButton,
+  addIcon,
 }: {
   children: ReactNode;
-  addButton: ReactNode;
+  addIcon: ReactNode;
 }) => {
   const timerRef = useRef<number>();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -42,18 +42,18 @@ const CommentableSection = ({
       comments.reduce((acc, comment) => {
         const containerRef =
           commentableContainers.current[
-            comment.selection.containerId
+            comment.selectionRange.containerId
           ];
 
         if (!containerRef?.current) return { ...acc };
 
         const startPosition = findNodeAndOffsetFromTotalOffset(
           containerRef.current,
-          comment.selection.startOffset,
+          comment.selectionRange.startOffset,
         );
         const endPosition = findNodeAndOffsetFromTotalOffset(
           containerRef.current,
-          comment.selection.endOffset,
+          comment.selectionRange.endOffset,
         );
 
         if (!startPosition || !endPosition) return { ...acc };
@@ -96,7 +96,7 @@ const CommentableSection = ({
   return (
     <div ref={sectionRef} style={{ position: 'relative' }}>
       {children}
-      <NewCommentTrigger>{addButton}</NewCommentTrigger>
+      <NewCommentTrigger>{addIcon}</NewCommentTrigger>
     </div>
   );
 };

@@ -1,16 +1,16 @@
-export interface TextSelection {
+export interface SelectionRange {
   containerId: string;
   startOffset: number;
   endOffset: number;
 }
 
-export interface TextSelectionPosition extends TextSelection {
+export interface PositionedSelectionRange extends SelectionRange {
   positionTop: number;
 }
 
 export interface Comment {
   id: string;
-  selection: TextSelection;
+  selectionRange: SelectionRange;
 }
 
 export type CommentPositions = Record<string, { top: number }>;

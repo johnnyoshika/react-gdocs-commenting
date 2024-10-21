@@ -3,7 +3,7 @@ import { useSelectionContext } from './SelectionContext';
 
 const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
   const {
-    selectedText,
+    positionedSelection,
     commentableSectionOffsetY,
     setShowNewCommentBox,
   } = useSelectionContext();
@@ -12,7 +12,7 @@ const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
     setShowNewCommentBox(true);
   };
 
-  if (!selectedText) return null;
+  if (!positionedSelection) return null;
 
   return (
     <button
@@ -20,7 +20,8 @@ const NewCommentTrigger = ({ children }: { children: ReactNode }) => {
       style={{
         position: 'absolute',
         top: `${
-          (selectedText.positionTop ?? 0) - commentableSectionOffsetY
+          (positionedSelection.positionTop ?? 0) -
+          commentableSectionOffsetY
         }px`,
         right: '-3rem',
       }}

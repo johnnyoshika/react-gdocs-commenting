@@ -12,7 +12,7 @@ const CommentableContainer = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { setSelectedText, commentableContainers } =
+  const { setPositionedSelection, commentableContainers } =
     useSelectionContext();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const CommentableContainer = ({
 
     const selection = window.getSelection();
     if (!selection || selection.rangeCount == 0) {
-      setSelectedText(undefined);
+      setPositionedSelection(undefined);
       return;
     }
 
@@ -35,7 +35,7 @@ const CommentableContainer = ({
 
     // Check if the selection is collapsed (i.e., it's just a single click)
     if (range.collapsed) {
-      setSelectedText(undefined);
+      setPositionedSelection(undefined);
       return;
     }
 
@@ -44,7 +44,7 @@ const CommentableContainer = ({
       !containerRef.current.contains(range.startContainer) ||
       !containerRef.current.contains(range.endContainer)
     ) {
-      setSelectedText(undefined);
+      setPositionedSelection(undefined);
       return;
     }
 
@@ -63,7 +63,7 @@ const CommentableContainer = ({
     const scrollTop = document.documentElement.scrollTop;
     const positionTop = rect.top + scrollTop;
 
-    setSelectedText({
+    setPositionedSelection({
       startOffset,
       endOffset,
       containerId,

@@ -41,16 +41,16 @@ const AppLayout = () => {
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection>
               <NewComment>
-                {({ selectedText, setShowNewCommentBox }) => (
+                {({ positionedSelection, setShowNewCommentBox }) => (
                   <NewCommentForm
                     handleAddComment={text =>
                       addComment({
                         id: Math.random()
                           .toString(36)
                           .substring(2, 12),
-                        messageId: selectedText.containerId,
+                        messageId: positionedSelection.containerId,
                         text,
-                        selection: selectedText,
+                        selectionRange: positionedSelection,
                       })
                     }
                     setShowNewCommentBox={setShowNewCommentBox}
@@ -78,7 +78,7 @@ const App = () => {
           id: 'w2s3xszzhw',
           messageId: '3',
           text: 'First comment',
-          selection: {
+          selectionRange: {
             containerId: '3',
             startOffset: 108,
             endOffset: 130,
@@ -88,7 +88,7 @@ const App = () => {
           id: 'kjpvtk8y2m',
           messageId: '3',
           text: 'Another comment',
-          selection: {
+          selectionRange: {
             containerId: '3',
             startOffset: 325,
             endOffset: 423,
@@ -100,7 +100,7 @@ const App = () => {
           text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu ligula eget enim mollis tincidunt. Proin facilisis odio lectus, at pellentesque mi egestas quis. In hac habitasse platea dictumst. Maecenas vitae accumsan lectus, at porttitor arcu. Suspendisse ornare orci ut mauris varius, at dictum mi rhoncus. Nulla turpis felis, convallis ac vestibulum vel, dignissim vel lorem. Curabitur molestie et ex in dapibus.
 
 Proin ac elit metus. Sed sodales convallis aliquet. Nulla pulvinar in est vehicula gravida. Suspendisse scelerisque varius neque. Pellentesque sed dictum ante, sed posuere orci.`,
-          selection: {
+          selectionRange: {
             startOffset: 251,
             endOffset: 292,
             containerId: '3',

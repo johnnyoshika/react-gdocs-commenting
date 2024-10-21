@@ -1,7 +1,7 @@
+import parse from 'html-react-parser';
+import { marked } from 'marked';
 import React, { useEffect, useState } from 'react';
 import { Comment } from './types';
-import { marked } from 'marked';
-import parse from 'html-react-parser';
 
 const Highlight = ({
   markdown,
@@ -158,8 +158,8 @@ function getHighlightRangesForTextNode(
   const ranges: [number, number][] = [];
 
   comments.forEach(comment => {
-    const selStart = comment.selection.startOffset;
-    const selEnd = comment.selection.endOffset;
+    const selStart = comment.selectionRange.startOffset;
+    const selEnd = comment.selectionRange.endOffset;
 
     const overlapStart = Math.max(start, selStart);
     const overlapEnd = Math.min(end, selEnd);
