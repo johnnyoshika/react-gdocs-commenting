@@ -41,16 +41,16 @@ const AppLayout = () => {
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection>
               <NewComment>
-                {({ positionedSelection, setShowNewCommentBox }) => (
+                {({ selectionRange, setShowNewCommentBox }) => (
                   <NewCommentForm
                     handleAddComment={text =>
                       addComment({
                         id: Math.random()
                           .toString(36)
                           .substring(2, 12),
-                        messageId: positionedSelection.containerId,
+                        messageId: selectionRange.containerId,
                         text,
-                        selectionRange: positionedSelection,
+                        selectionRange,
                       })
                     }
                     setShowNewCommentBox={setShowNewCommentBox}
