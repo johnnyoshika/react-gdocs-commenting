@@ -21,7 +21,6 @@ type CommentPositionContextType = {
   unregisterComment: (id: string) => void;
   getAdjustedTop: (id: string) => number;
   updateCommentSize: (id: string, size: CommentSize) => void;
-  setNewCommentPosition: (position: number | null) => void;
 };
 
 const calculatePositions = (
@@ -103,9 +102,6 @@ export const CommentPositionProvider = ({
   const [adjustedPositions, setAdjustedPositions] =
     useState<CommentPositions>({});
   const { commentPositionState } = useSelectionContext();
-  const [newCommentPosition, setNewCommentPosition] = useState<
-    number | null
-  >(null);
 
   const updatePositions = useCallback(() => {
     const newPositions = calculatePositions(
@@ -163,14 +159,12 @@ export const CommentPositionProvider = ({
       unregisterComment,
       getAdjustedTop,
       updateCommentSize,
-      setNewCommentPosition,
     }),
     [
       registerComment,
       unregisterComment,
       getAdjustedTop,
       updateCommentSize,
-      setNewCommentPosition,
     ],
   );
 

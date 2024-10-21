@@ -1,14 +1,15 @@
 // NewComment.tsx
 import { ReactNode, useEffect } from 'react';
 import CommentPosition from './CommentPosition';
-import { useCommentPositionContext } from './CommentPositionContext';
 import { NEW_COMMENT_ID } from './constants';
 import { useSelectionContext } from './SelectionContext';
-import { SelectionRange } from './types';
+import { PositionedSelectionRange, SelectionRange } from './types';
 
-const NewComment = ({
+const NewCommentPosition = ({
+  positionedSelection,
   children,
 }: {
+  positionedSelection: PositionedSelectionRange;
   children: ({
     selectionRange,
     setShowNewCommentBox,
@@ -17,22 +18,35 @@ const NewComment = ({
     setShowNewCommentBox: (show: boolean) => void;
   }) => ReactNode;
 }) => {
-  const {
-    positionedSelection,
-    showNewCommentBox,
-    setShowNewCommentBox,
-  } = useSelectionContext();
-  const { setNewCommentPosition } = useCommentPositionContext();
+  const { setShowNewCommentBox, setCommentPositionState } =
+    useSelectionContext();
 
   useEffect(() => {
-    if (positionedSelection && showNewCommentBox) {
-      setNewCommentPosition(positionedSelection.positionTop);
-    } else {
-      setNewCommentPosition(null);
-    }
-  }, [positionedSelection, showNewCommentBox, setNewCommentPosition]);
+    setCommentPositionState(prev => {
+      const positions = { ...prev.positions };
+      positions[NEW_COMMENT_ID] = {
+        top: positionedSelection.positionTop,
+      };
+      return {
+        positions,
+        activeCommentId: NEW_COMMENT_ID,
+      };
+    });
 
-  if (!positionedSelection || !showNewCommentBox) return null;
+    return () => {
+      setCommentPositionState(prev => {
+        const positions = { ...prev.positions };
+        delete positions[NEW_COMMENT_ID];
+        return {
+          positions,
+          activeCommentId:
+            prev.activeCommentId === NEW_COMMENT_ID
+              ? null
+              : prev.activeCommentId,
+        };
+      });
+    };
+  }, []);
 
   // Even though we have PositionedSelectionRange here, we don't want to leak positionTop outside of this plugin
   const selectionRange = {
@@ -54,6 +68,29 @@ const NewComment = ({
         setShowNewCommentBox,
       })}
     </CommentPosition>
+  );
+};
+
+const NewComment = ({
+  children,
+}: {
+  children: ({
+    selectionRange,
+    setShowNewCommentBox,
+  }: {
+    selectionRange: SelectionRange;
+    setShowNewCommentBox: (show: boolean) => void;
+  }) => ReactNode;
+}) => {
+  const { positionedSelection, showNewCommentBox } =
+    useSelectionContext();
+
+  if (!positionedSelection || !showNewCommentBox) return null;
+
+  return (
+    <NewCommentPosition positionedSelection={positionedSelection}>
+      {children}
+    </NewCommentPosition>
   );
 };
 
