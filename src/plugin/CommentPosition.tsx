@@ -2,6 +2,7 @@
 import { debounce } from 'lodash';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useCommentPositionContext } from './CommentPositionContext';
+import { NEW_COMMENT_ID } from './constants';
 import { useSelectionContext } from './SelectionContext';
 import { Comment } from './types';
 
@@ -114,6 +115,9 @@ const CommentPosition = ({
   };
 
   const adjustedTop = getAdjustedTop(comment.id);
+
+  // TODO: Fix this hack. It's here because new comment box initially gets positioned at the top, resulting in a scroll jump to the top.
+  if (adjustedTop === 0 && comment.id === NEW_COMMENT_ID) return null;
 
   return (
     <div
