@@ -60,7 +60,7 @@ const AppLayout = () => {
                         selectionRange,
                       });
 
-                      // This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
+                      // TODO: This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
                       setActiveCommentId(id);
                     }}
                     setShowNewCommentBox={setShowNewCommentBox}
@@ -74,7 +74,7 @@ const AppLayout = () => {
                       comment={comment}
                       isActive={isActive}
                       deleteComment={(commentId: string) => {
-                        // This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
+                        // TODO: This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
                         setActiveCommentId(null);
                         deleteComment(commentId);
                       }}

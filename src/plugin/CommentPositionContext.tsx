@@ -38,6 +38,7 @@ export const CommentPositionProvider = ({
     useState<CommentPositions>({});
   const { commentPositionState } = useSelectionContext();
 
+  // TODO: fix the memoization here - positions get calculated on every render
   const updatePositions = useCallback(() => {
     const newPositions = calculatePositions(
       commentPositionState,
