@@ -19,3 +19,7 @@ export interface CommentPositionState {
   positions: CommentPositions;
   activeCommentId: string | null;
 }
+
+export type CommentSize = {
+  height: number;
+};
