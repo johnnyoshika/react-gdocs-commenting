@@ -1,10 +1,10 @@
 import AddIcon from './AddIcon';
 import CommentBox from './CommentBox';
+import { NewCommentForm } from './CommentForm';
 import CommentsContext, {
   useCommentsContext,
 } from './CommentsContext';
 import MessageBox from './MessageBox';
-import NewCommentForm from './NewCommentForm';
 import { messages } from './data';
 import CommentPosition from './plugin/CommentPosition';
 import CommentableContainer from './plugin/CommentableContainer';
@@ -14,8 +14,23 @@ import NewComment from './plugin/NewComment';
 import { SelectionProvider } from './plugin/SelectionContext';
 
 const AppLayout = () => {
-  const { comments, addComment, deleteComment } =
+  const { comments, addComment, deleteComment, setComments } =
     useCommentsContext();
+
+  const editComment = (commentId: string, text: string) => {
+    setComments(prevComments => {
+      const index = prevComments.findIndex(c => c.id === commentId);
+      if (index === -1) return prevComments;
+
+      const prevComment = prevComments[index];
+
+      return [
+        ...prevComments.slice(0, index),
+        { ...prevComment, text },
+        ...prevComments.slice(index + 1),
+      ];
+    });
+  };
 
   return (
     <SelectionProvider comments={comments}>
@@ -73,6 +88,7 @@ const AppLayout = () => {
                     <CommentBox
                       comment={comment}
                       isActive={isActive}
+                      editComment={editComment}
                       deleteComment={(commentId: string) => {
                         // TODO: This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
                         setActiveCommentId(null);

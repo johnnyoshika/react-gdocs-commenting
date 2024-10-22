@@ -1,18 +1,24 @@
 import { KeyboardEvent, useEffect, useRef } from 'react';
+import { MessageComment } from '../types';
 
-const NewCommentForm = ({
-  handleAddComment,
-  setShowNewCommentBox,
-}: {
-  handleAddComment: (text: string) => void;
-  setShowNewCommentBox: (show: boolean) => void;
-}) => {
+interface BaseCommentFormProps {
+  onSubmit: (text: string) => void;
+  onCancel: () => void;
+  initialText?: string;
+  submitLabel?: string;
+}
+
+const BaseCommentForm = ({
+  onSubmit,
+  onCancel,
+  initialText = '',
+  submitLabel = 'Comment',
+}: BaseCommentFormProps) => {
   const commentFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (!commentFormRef.current) return;
 
-    // Focus on the textarea when the form is shown
     const textarea = commentFormRef.current.elements.namedItem(
       'comment',
     ) as HTMLTextAreaElement;
@@ -29,8 +35,7 @@ const NewCommentForm = ({
 
     if (!commentText) return;
 
-    handleAddComment(commentText);
-    setShowNewCommentBox(false);
+    onSubmit(commentText);
     form.reset();
   };
 
@@ -39,10 +44,6 @@ const NewCommentForm = ({
   ) => {
     event.preventDefault();
     submitComment();
-  };
-
-  const handleCancel = () => {
-    setShowNewCommentBox(false);
   };
 
   const handleKeyDown = (
@@ -55,17 +56,11 @@ const NewCommentForm = ({
   };
 
   return (
-    <form
-      ref={commentFormRef}
-      onSubmit={handleCommentSubmit}
-      className="bg-gray-100 rounded-lg p-3 mb-2"
-    >
-      <div className="flex items-center mb-2">
-        <span className="font-bold">Johnny Oshika</span>
-      </div>
+    <form ref={commentFormRef} onSubmit={handleCommentSubmit}>
       <textarea
         name="comment"
         placeholder="Add a comment"
+        defaultValue={initialText}
         className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
         rows={3}
         onKeyDown={handleKeyDown}
@@ -74,7 +69,7 @@ const NewCommentForm = ({
         <button
           type="button"
           className="px-4 py-2 rounded-full text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
-          onClick={handleCancel}
+          onClick={onCancel}
         >
           Cancel
         </button>
@@ -82,11 +77,53 @@ const NewCommentForm = ({
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors"
         >
-          Comment
+          {submitLabel}
         </button>
       </div>
     </form>
   );
 };
 
-export default NewCommentForm;
+const NewCommentForm = ({
+  handleAddComment,
+  setShowNewCommentBox,
+}: {
+  handleAddComment: (text: string) => void;
+  setShowNewCommentBox: (show: boolean) => void;
+}) => {
+  return (
+    <div className="bg-gray-100 rounded-lg p-3 mb-2">
+      <div className="flex items-center mb-2">
+        <span className="font-bold">Johnny Oshika</span>
+      </div>
+      <BaseCommentForm
+        onSubmit={(text: string) => {
+          handleAddComment(text);
+          setShowNewCommentBox(false);
+        }}
+        onCancel={() => setShowNewCommentBox(false)}
+      />
+    </div>
+  );
+};
+
+const EditCommentForm = ({
+  comment,
+  onSave,
+  onCancel,
+}: {
+  comment: MessageComment;
+  onSave: (text: string) => void;
+  onCancel: () => void;
+}) => {
+  return (
+    <BaseCommentForm
+      onSubmit={onSave}
+      onCancel={onCancel}
+      initialText={comment.text}
+      submitLabel="Save"
+    />
+  );
+};
+
+export { EditCommentForm, NewCommentForm };

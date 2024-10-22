@@ -6,6 +6,7 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { MoreVertical } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { EditCommentForm } from '../CommentForm';
 import { MessageComment } from '../types';
 
 const MAX_HEIGHT = 100;
@@ -71,8 +72,15 @@ const CommentContent: React.FC<{
 const CommentBox: React.FC<{
   comment: MessageComment;
   isActive: boolean;
+  editComment: (commentId: string, text: string) => void;
   deleteComment: (commentId: string) => void;
-}> = ({ comment, isActive, deleteComment }) => {
+}> = ({ comment, isActive, editComment, deleteComment }) => {
+  const [editing, setEditing] = useState(false);
+
+  const onEditClick = () => {
+    setEditing(true);
+  };
+
   return (
     <div
       className={`rounded-lg p-3 mb-2 transition-colors duration-200 ${
@@ -84,7 +92,7 @@ const CommentBox: React.FC<{
           <span className="font-bold">Johnny Oshika</span>
           <span className="ml-2 text-gray-600">12:32PM Oct 10</span>
         </div>
-        {isActive && (
+        {isActive && !editing && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="p-1 hover:bg-gray-200 rounded-full transition-colors">
@@ -96,7 +104,7 @@ const CommentBox: React.FC<{
               className="w-24 bg-white border rounded-md shadow-md z-50"
             >
               <DropdownMenuItem
-                onClick={() => onEdit?.(comment)}
+                onClick={onEditClick}
                 className="cursor-pointer hover:bg-slate-50 px-2 py-2"
               >
                 Edit
@@ -111,7 +119,18 @@ const CommentBox: React.FC<{
           </DropdownMenu>
         )}
       </div>
-      <CommentContent comment={comment} isActive={isActive} />
+      {editing ? (
+        <EditCommentForm
+          comment={comment}
+          onSave={text => {
+            editComment(comment.id, text);
+            setEditing(false);
+          }}
+          onCancel={() => setEditing(false)}
+        />
+      ) : (
+        <CommentContent comment={comment} isActive={isActive} />
+      )}
     </div>
   );
 };
