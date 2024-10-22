@@ -7,8 +7,10 @@ import { Comment } from './types';
 
 type RenderPropFn = ({
   isActive,
+  setActiveCommentId,
 }: {
   isActive: boolean;
+  setActiveCommentId: (id: string | null) => void;
 }) => ReactNode;
 
 type CommentPositionProps = {
@@ -129,6 +131,7 @@ const CommentPosition = ({
       {typeof children === 'function'
         ? (children as RenderPropFn)({
             isActive: activeCommentId === comment.id,
+            setActiveCommentId,
           })
         : children}
     </div>

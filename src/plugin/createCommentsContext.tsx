@@ -1,9 +1,9 @@
 import React, {
   createContext,
-  useContext,
-  useState,
   useCallback,
+  useContext,
   useMemo,
+  useState,
 } from 'react';
 import type { Comment } from './types';
 
@@ -44,6 +44,7 @@ type CommentsContextType<T extends Comment> = {
   comments: T[];
   setComments: React.Dispatch<React.SetStateAction<T[]>>;
   addComment: (comment: T) => void;
+  deleteComment: (commentId: string) => void;
 };
 
 function createCommentsContext<T extends Comment>() {
@@ -77,13 +78,23 @@ function createCommentsContext<T extends Comment>() {
       [setComments],
     );
 
+    const deleteComment = useCallback(
+      (commentId: string) => {
+        setComments(prevComments =>
+          prevComments.filter(c => c.id !== commentId),
+        );
+      },
+      [setComments],
+    );
+
     const value = useMemo(
       () => ({
         comments,
         setComments,
         addComment,
+        deleteComment,
       }),
-      [comments, setComments, addComment],
+      [comments, setComments, addComment, deleteComment],
     );
 
     return (

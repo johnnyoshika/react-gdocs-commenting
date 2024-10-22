@@ -1,3 +1,10 @@
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@radix-ui/react-dropdown-menu';
+import { MoreVertical } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageComment } from '../types';
 
@@ -13,9 +20,10 @@ const renderComment = (text: string) => {
   ));
 };
 
-const CommentContent: React.FC<{ comment: MessageComment }> = ({
-  comment,
-}) => {
+const CommentContent: React.FC<{
+  comment: MessageComment;
+  isActive: boolean;
+}> = ({ comment, isActive }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showShowMore, setShowShowMore] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -25,6 +33,10 @@ const CommentContent: React.FC<{ comment: MessageComment }> = ({
       setShowShowMore(contentRef.current.scrollHeight > MAX_HEIGHT);
     }
   }, [comment.text]);
+
+  useEffect(() => {
+    if (!isActive) setIsExpanded(false);
+  }, [isActive, setIsExpanded]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -59,29 +71,47 @@ const CommentContent: React.FC<{ comment: MessageComment }> = ({
 const CommentBox: React.FC<{
   comment: MessageComment;
   isActive: boolean;
-}> = ({ comment, isActive }) => {
+  deleteComment: (commentId: string) => void;
+}> = ({ comment, isActive, deleteComment }) => {
   return (
     <div
       className={`rounded-lg p-3 mb-2 transition-colors duration-200 ${
         isActive ? 'bg-blue-50 ring-2 ring-blue-200' : 'bg-gray-100'
       }`}
     >
-      <div className="flex items-center mb-2">
-        <span className="font-bold">Johnny Oshika</span>
-        <span className="ml-2 text-gray-600">12:32PM Oct 10</span>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <span className="font-bold">Johnny Oshika</span>
+          <span className="ml-2 text-gray-600">12:32PM Oct 10</span>
+        </div>
+        {isActive && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-1 hover:bg-gray-200 rounded-full transition-colors">
+                <MoreVertical className="h-4 w-4 text-gray-500" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-24 bg-white border rounded-md shadow-md z-50"
+            >
+              <DropdownMenuItem
+                onClick={() => onEdit?.(comment)}
+                className="cursor-pointer hover:bg-slate-50 px-2 py-2"
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => deleteComment(comment.id)}
+                className="cursor-pointer text-red-600 hover:bg-slate-50 focus:text-red-600 px-2 py-2"
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
-      <CommentContent comment={comment} />
-      <div className="mt-2">
-        <input
-          type="text"
-          placeholder="Reply or add others with @"
-          className={`w-full p-2 border rounded-full transition-colors duration-200 ${
-            isActive
-              ? 'border-blue-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
-              : 'border-gray-300 focus:ring-2 focus:ring-gray-400 focus:border-gray-400'
-          }`}
-        />
-      </div>
+      <CommentContent comment={comment} isActive={isActive} />
     </div>
   );
 };

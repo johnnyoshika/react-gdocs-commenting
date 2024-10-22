@@ -14,7 +14,8 @@ import NewComment from './plugin/NewComment';
 import { SelectionProvider } from './plugin/SelectionContext';
 
 const AppLayout = () => {
-  const { comments, addComment } = useCommentsContext();
+  const { comments, addComment, deleteComment } =
+    useCommentsContext();
 
   return (
     <SelectionProvider comments={comments}>
@@ -59,6 +60,7 @@ const AppLayout = () => {
                         selectionRange,
                       });
 
+                      // This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
                       setActiveCommentId(id);
                     }}
                     setShowNewCommentBox={setShowNewCommentBox}
@@ -67,10 +69,15 @@ const AppLayout = () => {
               </NewComment>
               {comments.map(comment => (
                 <CommentPosition key={comment.id} comment={comment}>
-                  {({ isActive }) => (
+                  {({ isActive, setActiveCommentId }) => (
                     <CommentBox
                       comment={comment}
                       isActive={isActive}
+                      deleteComment={(commentId: string) => {
+                        // This should be encapsulated in addComment. Inject addComment into this render prop from SelectionContext.
+                        setActiveCommentId(null);
+                        deleteComment(commentId);
+                      }}
                     />
                   )}
                 </CommentPosition>
