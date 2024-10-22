@@ -13,8 +13,8 @@ import {
  - **Desired Positions:** Each comment has a desired top position based on the location of its associated text selection in the document (`positions[id].top`).
  - **Overlap Prevention:** Comments may overlap if their desired positions are close. The goal is to adjust their positions to prevent overlap while keeping them as close as possible to their desired positions.
  - **Active Comment Priority:** If there's an active (focused) comment, it should remain at its desired position. Other comments adjust around it to prevent overlap, but they should not stray far from their own desired positions.
- - **Minimal Adjustment:** Adjust comments only when necessary and by the minimal amount required to prevent overlap.
- 
+ - **Minimal Adjustment:** Adjust comments only when necessary and by the minimal amount required to prevent overlap. Adjustments are limited to overlapping comments.
+
  **Function Inputs:**
  
  - `state: CommentPositionState`
@@ -49,11 +49,13 @@ import {
         - For each comment:
           - Calculate the maximum allowable top position (`requiredTop`) to prevent overlap with the comment below it.
           - Adjust the comment's position upward to the minimum of its desired position and `requiredTop`, ensuring it doesn't move above its desired position.
+          - **Early Exit:** If no overlap is detected (i.e., the adjusted position equals the desired position), break out of the loop to prevent unnecessary adjustments to comments that are not overlapping.
       - **Adjust Comments Below the Active Comment:**
         - Iterate forward from the comment just below the active comment.
         - For each comment:
           - Calculate the minimum allowable top position (`requiredTop`) to prevent overlap with the comment above it.
           - Adjust the comment's position downward to the maximum of its desired position and `requiredTop`, ensuring it doesn't move below its desired position.
+          - **Early Exit:** Similarly, break out of the loop if no overlap is detected to avoid adjusting non-overlapping comments.
  
  5. **Finalize Adjusted Positions:**
     - Compile the adjusted positions into `newPositions`.
@@ -63,8 +65,10 @@ import {
  - **Desired Position vs. Adjusted Position:**
    - The desired position is where the comment would naturally appear next to its associated text.
    - The adjusted position is where the comment is actually placed after adjustments to prevent overlap.
- - **Overlap Detection:**
-   - Overlaps are detected by comparing the current comment's top position plus its height and the `COMMENT_OVERLAP_GAP` against the next comment's top position.
+ - **Overlap Detection and Early Exit:**
+   - Overlaps are detected by comparing the positions and heights of adjacent comments.
+   - The algorithm minimizes adjustments by only altering positions when an overlap is detected.
+   - The loops exit early when further comments do not overlap, preventing unnecessary computations.
  - **Minimal Movement:**
    - Comments are only moved as much as necessary to prevent overlap.
    - Adjustments do not push comments beyond their desired positions unless required.
@@ -76,6 +80,7 @@ import {
    - Preventing overlap ensures that comments are readable and accessible.
  - **Active Comment Focus:**
    - Prioritizing the active comment's position maintains context for the user and avoids unexpected movements during interaction.
+   - Limiting adjustments to overlapping comments preserves the stability of other comments.
  
  **Example Scenario:**
  
@@ -90,7 +95,9 @@ import {
    - Repeat for Comment 3.
  - **Active Comment:**
    - If Comment 2 becomes active, it stays at 140px.
-   - Comments above and below adjust accordingly to prevent overlap.
+   - Comments above adjust if they overlap with Comment 2.
+   - Comments below adjust if they overlap with Comment 2.
+   - Adjustments stop once no overlap is detected, leaving distant comments unaffected.
  
  **Dependencies:**
  
