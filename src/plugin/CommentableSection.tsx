@@ -26,6 +26,7 @@ const CommentableSection = ({
     setCommentPositionState,
     setActiveCommentId,
     setPositionedSelection,
+    showNewCommentBox,
   } = useSelectionContext();
 
   const setOffset = useCallback(() => {
@@ -101,6 +102,9 @@ const CommentableSection = ({
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     if (!(e.target instanceof HTMLElement)) return;
+
+    // If new comment box is showing, don't mess with anything:
+    if (showNewCommentBox) return;
 
     // Check for text selection first
     const selection = window.getSelection();
