@@ -99,79 +99,83 @@ const CommentableSection = ({
     };
   }, [reposition]);
 
-  const handleTextSelection = () => {
-    if (!sectionRef.current) return;
-
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount == 0) {
-      setPositionedSelection(undefined);
-      return;
-    }
-
-    const range = selection.getRangeAt(0);
-
-    // Check if the selection is collapsed (i.e., it's just a single click)
-    if (range.collapsed) {
-      setPositionedSelection(undefined);
-      return;
-    }
-
-    const container =
-      range.commonAncestorContainer.parentElement?.closest(
-        '[data-container-id]',
-      );
-
-    const containerId = container?.getAttribute('data-container-id');
-
-    const isWithinCommentable =
-      container && sectionRef.current.contains(container);
-
-    // Check if both the start and end containers are within contentRef
-    if (!containerId || !isWithinCommentable) {
-      setPositionedSelection(undefined);
-      return;
-    }
-
-    const startOffset = getOffsetInTextContent(
-      container,
-      range.startContainer,
-      range.startOffset,
-    );
-    const endOffset = getOffsetInTextContent(
-      container,
-      range.endContainer,
-      range.endOffset,
-    );
-
-    const rect = range.getBoundingClientRect();
-    const scrollTop = document.documentElement.scrollTop;
-    const positionTop = rect.top + scrollTop;
-
-    setPositionedSelection({
-      startOffset,
-      endOffset,
-      containerId,
-      positionTop,
-    });
-  };
-
-  const handleCommentSelection = (
+  const handleInteraction = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     if (!(e.target instanceof HTMLElement)) return;
 
-    if (!e.target.hasAttribute('data-comment-id')) return;
+    // Check for text selection first
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
 
+      // If there's an actual selection (not just a click)
+      if (!range.collapsed) {
+        const container =
+          range.commonAncestorContainer.parentElement?.closest(
+            '[data-container-id]',
+          );
+        const containerId = container?.getAttribute(
+          'data-container-id',
+        );
+        const isWithinCommentable =
+          container && sectionRef.current?.contains(container);
+
+        if (!containerId || !isWithinCommentable) {
+          setPositionedSelection(undefined);
+          setActiveCommentId(null);
+          return;
+        }
+
+        const startOffset = getOffsetInTextContent(
+          container,
+          range.startContainer,
+          range.startOffset,
+        );
+        const endOffset = getOffsetInTextContent(
+          container,
+          range.endContainer,
+          range.endOffset,
+        );
+
+        const rect = range.getBoundingClientRect();
+        const scrollTop = document.documentElement.scrollTop;
+        const positionTop = rect.top + scrollTop;
+
+        setPositionedSelection({
+          startOffset,
+          endOffset,
+          containerId,
+          positionTop,
+        });
+        setActiveCommentId(null);
+        return;
+      }
+    }
+
+    // If we get here, it means either:
+    // 1. There was no selection at all
+    // 2. The selection was collapsed (just a click)
+
+    // Now check if clicking on a comment
     const commentId = e.target.getAttribute('data-comment-id');
-    setActiveCommentId(commentId);
+    if (commentId) {
+      e.stopPropagation();
+      setActiveCommentId(commentId);
+      setPositionedSelection(undefined);
+      return;
+    }
+
+    // If we get here, it was a click on a non-comment area
+    setPositionedSelection(undefined);
+    setActiveCommentId(null);
   };
 
   return (
     <div
       ref={sectionRef}
       style={{ position: 'relative' }}
-      onMouseUp={handleTextSelection}
-      onClick={handleCommentSelection}
+      onMouseUp={handleInteraction}
     >
       {children}
       <NewCommentTrigger>{addIcon}</NewCommentTrigger>
