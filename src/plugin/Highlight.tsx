@@ -22,7 +22,7 @@ const Highlight = ({
     node: null,
   });
 
-  const { activeCommentId, newCommentSelectionRange } =
+  const { activeCommentId, newCommentSelection } =
     useSelectionContext();
 
   useEffect(() => {
@@ -33,12 +33,12 @@ const Highlight = ({
     }));
 
     if (
-      newCommentSelectionRange &&
-      containerId === newCommentSelectionRange.containerId
+      newCommentSelection &&
+      containerId === newCommentSelection.containerId
     )
       selectionRanges.push({
         id: NEW_COMMENT_ID,
-        selectionRange: newCommentSelectionRange,
+        selectionRange: newCommentSelection,
       });
 
     const processMarkdown = async () => {

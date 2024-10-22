@@ -6,10 +6,10 @@ import { useSelectionContext } from './SelectionContext';
 import { PositionedSelectionRange, SelectionRange } from './types';
 
 const NewCommentPosition = ({
-  positionedSelection,
+  newCommentSelection,
   children,
 }: {
-  positionedSelection: PositionedSelectionRange;
+  newCommentSelection: PositionedSelectionRange;
   children: ({
     selectionRange,
     setShowNewCommentBox,
@@ -30,7 +30,7 @@ const NewCommentPosition = ({
     setCommentPositionState(prev => {
       const positions = { ...prev.positions };
       positions[NEW_COMMENT_ID] = {
-        top: positionedSelection.positionTop,
+        top: newCommentSelection.positionTop,
       };
       return {
         positions,
@@ -55,9 +55,9 @@ const NewCommentPosition = ({
 
   // Even though we have PositionedSelectionRange here, we don't want to leak positionTop outside of this plugin
   const selectionRange = {
-    containerId: positionedSelection.containerId,
-    startOffset: positionedSelection.startOffset,
-    endOffset: positionedSelection.endOffset,
+    containerId: newCommentSelection.containerId,
+    startOffset: newCommentSelection.startOffset,
+    endOffset: newCommentSelection.endOffset,
   };
 
   return (
@@ -90,13 +90,13 @@ const NewComment = ({
     setActiveCommentId: (commentId: string | null) => void;
   }) => ReactNode;
 }) => {
-  const { positionedSelection, showNewCommentBox } =
+  const { newCommentSelection, showNewCommentBox } =
     useSelectionContext();
 
-  if (!positionedSelection || !showNewCommentBox) return null;
+  if (!newCommentSelection || !showNewCommentBox) return null;
 
   return (
-    <NewCommentPosition positionedSelection={positionedSelection}>
+    <NewCommentPosition newCommentSelection={newCommentSelection}>
       {children}
     </NewCommentPosition>
   );

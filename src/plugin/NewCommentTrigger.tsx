@@ -12,20 +12,18 @@ const NewCommentTriggerMount = ({
   const {
     commentableSectionOffsetY,
     setShowNewCommentBox,
-    setNewCommentSelectionRange,
+    setNewCommentSelection,
+    setPositionedSelection,
   } = useSelectionContext();
 
   // Reset showNewCommentBox state so new comment box doesn't show automatically on text select
   useEffect(() => setShowNewCommentBox(false), []);
 
   const handleClick = () => {
-    setNewCommentSelectionRange({
-      containerId: positionedSelection.containerId,
-      startOffset: positionedSelection.startOffset,
-      endOffset: positionedSelection.endOffset,
-    });
+    setNewCommentSelection(positionedSelection);
 
     setShowNewCommentBox(true);
+    setPositionedSelection(undefined);
   };
 
   return (

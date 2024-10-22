@@ -12,7 +12,6 @@ import type {
   Comment,
   CommentPositionState,
   PositionedSelectionRange,
-  SelectionRange,
 } from './types';
 
 const SelectionContext = createContext<
@@ -36,9 +35,9 @@ const SelectionContext = createContext<
       >;
       activeCommentId: string | null;
       setActiveCommentId: (commentId: string | null) => void;
-      newCommentSelectionRange: SelectionRange | undefined;
-      setNewCommentSelectionRange: (
-        range: SelectionRange | undefined,
+      newCommentSelection: PositionedSelectionRange | undefined;
+      setNewCommentSelection: (
+        selection: PositionedSelectionRange | undefined,
       ) => void;
       comments: Comment[];
     }
@@ -65,8 +64,9 @@ export const SelectionProvider = ({
       positions: {},
       activeCommentId: null,
     });
-  const [newCommentSelectionRange, setNewCommentSelectionRange] =
-    useState<SelectionRange | undefined>();
+  const [newCommentSelection, setNewCommentSelection] = useState<
+    PositionedSelectionRange | undefined
+  >();
 
   const commentableContainers = useRef<
     Record<string, React.RefObject<HTMLDivElement>>
@@ -97,8 +97,8 @@ export const SelectionProvider = ({
       setCommentPositionState,
       setActiveCommentId,
       activeCommentId: commentPositionState.activeCommentId,
-      newCommentSelectionRange,
-      setNewCommentSelectionRange,
+      newCommentSelection,
+      setNewCommentSelection,
       comments,
     }),
     [
@@ -114,8 +114,8 @@ export const SelectionProvider = ({
       commentPositionState,
       setCommentPositionState,
       setActiveCommentId,
-      newCommentSelectionRange,
-      setNewCommentSelectionRange,
+      newCommentSelection,
+      setNewCommentSelection,
       comments,
     ],
   );
