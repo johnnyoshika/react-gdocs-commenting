@@ -1,4 +1,3 @@
-// CommentPositionContext.tsx
 import { COMMENT_OVERLAP_GAP } from './constants';
 import {
   CommentPositions,
@@ -123,7 +122,7 @@ export const calculatePositions = (
     finalPositions[id] = position.top;
   });
 
-  // Adjust positions to prevent overlap
+  // Adjust positions to prevent overlap when there's no active comment
   for (let i = 0; i < sortedComments.length; i++) {
     const [currentId] = sortedComments[i];
     const currentTop = finalPositions[currentId];
@@ -142,7 +141,7 @@ export const calculatePositions = (
     }
   }
 
-  // If there's an active comment, ensure it stays at its desired position
+  // If there's an active comment, adjust positions only where necessary
   if (activeCommentId && positions[activeCommentId]) {
     const activeIndex = sortedComments.findIndex(
       ([id]) => id === activeCommentId,
@@ -161,17 +160,18 @@ export const calculatePositions = (
       const nextId = sortedComments[i + 1][0];
       const nextTop = finalPositions[nextId];
 
+      // Calculate the maximum top position to prevent overlap
       const requiredTop =
         nextTop - currentHeight - COMMENT_OVERLAP_GAP;
 
-      if (
-        finalPositions[currentId] +
-          currentHeight +
-          COMMENT_OVERLAP_GAP >
-        nextTop
-      ) {
-        // Adjust current comment's position upwards to prevent overlap
-        finalPositions[currentId] = Math.min(desiredTop, requiredTop);
+      // Adjust current comment's position upwards without exceeding desired position
+      const adjustedTop = Math.min(desiredTop, requiredTop);
+
+      if (adjustedTop < desiredTop) {
+        finalPositions[currentId] = adjustedTop;
+      } else {
+        // No overlap; stop adjusting further comments
+        break;
       }
     }
 
@@ -179,15 +179,22 @@ export const calculatePositions = (
     for (let i = activeIndex + 1; i < sortedComments.length; i++) {
       const [currentId] = sortedComments[i];
       const desiredTop = positions[currentId].top;
+
       const prevId = sortedComments[i - 1][0];
       const prevTop = finalPositions[prevId];
       const prevHeight = getCommentHeight(prevId);
 
+      // Calculate the minimum top position to prevent overlap
       const requiredTop = prevTop + prevHeight + COMMENT_OVERLAP_GAP;
 
-      if (finalPositions[currentId] < requiredTop) {
-        // Adjust current comment's position downwards to prevent overlap
-        finalPositions[currentId] = Math.max(desiredTop, requiredTop);
+      // Adjust current comment's position downwards without exceeding desired position
+      const adjustedTop = Math.max(desiredTop, requiredTop);
+
+      if (adjustedTop > desiredTop) {
+        finalPositions[currentId] = adjustedTop;
+      } else {
+        // No overlap; stop adjusting further comments
+        break;
       }
     }
   }
