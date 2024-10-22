@@ -33,7 +33,8 @@ const SelectionContext = createContext<
       setCommentPositionState: React.Dispatch<
         React.SetStateAction<CommentPositionState>
       >;
-      setActiveComment: (commentId: string | null) => void;
+      activeCommentId: string | null;
+      setActiveCommentId: (commentId: string | null) => void;
       comments: Comment[];
     }
   | undefined
@@ -64,7 +65,7 @@ export const SelectionProvider = ({
     Record<string, React.RefObject<HTMLDivElement>>
   >({});
 
-  const setActiveComment = useCallback(
+  const setActiveCommentId = useCallback(
     (commentId: string | null) => {
       setCommentPositionState(prev => ({
         ...prev,
@@ -87,7 +88,8 @@ export const SelectionProvider = ({
       setShowNewCommentBox,
       commentPositionState,
       setCommentPositionState,
-      setActiveComment,
+      setActiveCommentId,
+      activeCommentId: commentPositionState.activeCommentId,
       comments,
     }),
     [
@@ -102,7 +104,7 @@ export const SelectionProvider = ({
       setShowNewCommentBox,
       commentPositionState,
       setCommentPositionState,
-      setActiveComment,
+      setActiveCommentId,
       comments,
     ],
   );

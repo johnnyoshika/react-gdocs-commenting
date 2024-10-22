@@ -44,7 +44,7 @@ const AppLayout = () => {
                 {({
                   selectionRange,
                   setShowNewCommentBox,
-                  setActiveComment,
+                  setActiveCommentId,
                 }) => (
                   <NewCommentForm
                     handleAddComment={text => {
@@ -59,7 +59,7 @@ const AppLayout = () => {
                         selectionRange,
                       });
 
-                      setActiveComment(id);
+                      setActiveCommentId(id);
                     }}
                     setShowNewCommentBox={setShowNewCommentBox}
                   />
