@@ -135,7 +135,11 @@ function processTextNode(
       const className = isActive ? 'highlight active' : 'highlight';
 
       nodes.push(
-        <span key={segmentStart} className={className}>
+        <span
+          data-comment-id={coveringComments[0].commentId}
+          key={segmentStart}
+          className={className}
+        >
           {segmentText}
         </span>,
       );

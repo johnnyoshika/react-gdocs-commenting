@@ -23,6 +23,7 @@ const CommentableSection = ({
     comments,
     setCommentableSectionOffsetY,
     setCommentPositionState,
+    setActiveCommentId,
   } = useSelectionContext();
 
   const setOffset = useCallback(() => {
@@ -94,8 +95,24 @@ const CommentableSection = ({
     };
   }, [reposition]);
 
+  const onClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!(e.target instanceof HTMLElement)) return;
+
+      if (!e.target.hasAttribute('data-comment-id')) return;
+
+      const commentId = e.target.getAttribute('data-comment-id');
+      setActiveCommentId(commentId);
+    },
+    [setActiveCommentId],
+  );
+
   return (
-    <div ref={sectionRef} style={{ position: 'relative' }}>
+    <div
+      ref={sectionRef}
+      style={{ position: 'relative' }}
+      onClick={onClick}
+    >
       {children}
       <NewCommentTrigger>{addIcon}</NewCommentTrigger>
     </div>
