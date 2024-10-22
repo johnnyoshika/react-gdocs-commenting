@@ -41,18 +41,26 @@ const AppLayout = () => {
           <div className="w-1/3 bg-white p-6 rounded-lg shadow-md">
             <CommentsSection>
               <NewComment>
-                {({ selectionRange, setShowNewCommentBox }) => (
+                {({
+                  selectionRange,
+                  setShowNewCommentBox,
+                  setActiveComment,
+                }) => (
                   <NewCommentForm
-                    handleAddComment={text =>
+                    handleAddComment={text => {
+                      const id = Math.random()
+                        .toString(36)
+                        .substring(2, 12);
+
                       addComment({
-                        id: Math.random()
-                          .toString(36)
-                          .substring(2, 12),
+                        id,
                         messageId: selectionRange.containerId,
                         text,
                         selectionRange,
-                      })
-                    }
+                      });
+
+                      setActiveComment(id);
+                    }}
                     setShowNewCommentBox={setShowNewCommentBox}
                   />
                 )}
@@ -75,7 +83,7 @@ const App = () => {
     <CommentsContext
       initialComments={[
         {
-          id: 'w2s3xszzhw',
+          id: 'comment-1',
           messageId: '3',
           text: 'First comment',
           selectionRange: {
@@ -85,7 +93,7 @@ const App = () => {
           },
         },
         {
-          id: 'kjpvtk8y2m',
+          id: 'comment-2',
           messageId: '3',
           text: 'Another comment',
           selectionRange: {
@@ -95,7 +103,7 @@ const App = () => {
           },
         },
         {
-          id: 'mmkrq4fgkj',
+          id: 'comment-3',
           messageId: '3',
           text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse eu ligula eget enim mollis tincidunt. Proin facilisis odio lectus, at pellentesque mi egestas quis. In hac habitasse platea dictumst. Maecenas vitae accumsan lectus, at porttitor arcu. Suspendisse ornare orci ut mauris varius, at dictum mi rhoncus. Nulla turpis felis, convallis ac vestibulum vel, dignissim vel lorem. Curabitur molestie et ex in dapibus.
 

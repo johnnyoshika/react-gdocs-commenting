@@ -13,13 +13,18 @@ const NewCommentPosition = ({
   children: ({
     selectionRange,
     setShowNewCommentBox,
+    setActiveComment,
   }: {
     selectionRange: SelectionRange;
     setShowNewCommentBox: (show: boolean) => void;
+    setActiveComment: (commentId: string | null) => void;
   }) => ReactNode;
 }) => {
-  const { setShowNewCommentBox, setCommentPositionState } =
-    useSelectionContext();
+  const {
+    setShowNewCommentBox,
+    setCommentPositionState,
+    setActiveComment,
+  } = useSelectionContext();
 
   useEffect(() => {
     setCommentPositionState(prev => {
@@ -66,6 +71,7 @@ const NewCommentPosition = ({
       {children({
         selectionRange,
         setShowNewCommentBox,
+        setActiveComment,
       })}
     </CommentPosition>
   );
@@ -77,9 +83,11 @@ const NewComment = ({
   children: ({
     selectionRange,
     setShowNewCommentBox,
+    setActiveComment,
   }: {
     selectionRange: SelectionRange;
     setShowNewCommentBox: (show: boolean) => void;
+    setActiveComment: (commentId: string | null) => void;
   }) => ReactNode;
 }) => {
   const { positionedSelection, showNewCommentBox } =

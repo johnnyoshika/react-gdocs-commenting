@@ -2,6 +2,7 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useMemo,
   useRef,
@@ -32,6 +33,7 @@ const SelectionContext = createContext<
       setCommentPositionState: React.Dispatch<
         React.SetStateAction<CommentPositionState>
       >;
+      setActiveComment: (commentId: string | null) => void;
       comments: Comment[];
     }
   | undefined
@@ -62,6 +64,16 @@ export const SelectionProvider = ({
     Record<string, React.RefObject<HTMLDivElement>>
   >({});
 
+  const setActiveComment = useCallback(
+    (commentId: string | null) => {
+      setCommentPositionState(prev => ({
+        ...prev,
+        activeCommentId: commentId,
+      }));
+    },
+    [setCommentPositionState],
+  );
+
   const value = useMemo(
     () => ({
       commentableContainers,
@@ -75,6 +87,7 @@ export const SelectionProvider = ({
       setShowNewCommentBox,
       commentPositionState,
       setCommentPositionState,
+      setActiveComment,
       comments,
     }),
     [
@@ -89,6 +102,7 @@ export const SelectionProvider = ({
       setShowNewCommentBox,
       commentPositionState,
       setCommentPositionState,
+      setActiveComment,
       comments,
     ],
   );

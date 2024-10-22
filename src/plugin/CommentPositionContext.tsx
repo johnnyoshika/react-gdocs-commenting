@@ -35,7 +35,8 @@ const calculatePositions = (
     .filter(([id]) => visibleComments.has(id))
     .sort(([, a], [, b]) => a.top - b.top);
 
-  if (activeCommentId) {
+  // When a new comment is made active, it may not be positions yet, so add a guard against that
+  if (activeCommentId && positions[activeCommentId]) {
     const activeCommentIndex = sortedComments.findIndex(
       ([id]) => id === activeCommentId,
     );
@@ -45,7 +46,7 @@ const calculatePositions = (
     let currentTop = activeCommentTop;
     for (let i = activeCommentIndex - 1; i >= 0; i--) {
       const [id] = sortedComments[i];
-      const commentHeight = commentSizes[id]?.height || 0;
+      const commentHeight = commentSizes[id]?.height ?? 0;
       currentTop -= commentHeight + COMMENT_OVERLAP_GAP;
       newPositions[id] = { top: currentTop };
     }
@@ -56,7 +57,7 @@ const calculatePositions = (
     // Position comments below the active comment
     currentTop =
       activeCommentTop +
-      (commentSizes[activeCommentId]?.height || 0) +
+      (commentSizes[activeCommentId]?.height ?? 0) +
       COMMENT_OVERLAP_GAP;
     for (
       let i = activeCommentIndex + 1;
@@ -66,7 +67,7 @@ const calculatePositions = (
       const [id] = sortedComments[i];
       newPositions[id] = { top: currentTop };
       currentTop +=
-        (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
+        (commentSizes[id]?.height ?? 0) + COMMENT_OVERLAP_GAP;
     }
   } else {
     // If no active comment, use the original positioning logic
@@ -77,7 +78,7 @@ const calculatePositions = (
       }
       newPositions[id] = { top: currentTop };
       currentTop +=
-        (commentSizes[id]?.height || 0) + COMMENT_OVERLAP_GAP;
+        (commentSizes[id]?.height ?? 0) + COMMENT_OVERLAP_GAP;
     });
   }
 
