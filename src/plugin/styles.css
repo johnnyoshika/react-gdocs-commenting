@@ -1,7 +1,7 @@
 .highlight {
-  background-color: yellow;
+  background-color: #fef2cd;
 }
 
-.highlight .highlight {
-  background-color: orange; /* For nested highlights */
+.highlight.active {
+  background-color: #fcbc03;
 }
