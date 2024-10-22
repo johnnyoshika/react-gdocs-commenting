@@ -9,8 +9,6 @@ import {
   getOffsetInTextContent,
 } from './utils';
 
-import './styles.css';
-
 const CommentableSection = ({
   children,
   addIcon,

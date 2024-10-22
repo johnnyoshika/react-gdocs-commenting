@@ -9,10 +9,14 @@ const Highlight = ({
   markdown,
   containerId,
   comments,
+  color,
+  activeColor,
 }: {
   markdown: string;
   containerId: string;
   comments: Comment[];
+  color: string;
+  activeColor: string;
 }) => {
   const [result, setResult] = useState<{ node: React.ReactNode }>({
     node: null,
@@ -45,6 +49,8 @@ const Highlight = ({
         0,
         selectionRanges,
         activeCommentId,
+        color,
+        activeColor,
       );
       setResult(result);
     };
@@ -62,18 +68,36 @@ function processNode(
   offset: number,
   comments: Comment[],
   activeCommentId: string | null,
+  color: string,
+  activeColor: string,
 ): { node: React.ReactNode; offset: number } {
   if (typeof node === 'string') {
-    return processTextNode(node, offset, comments, activeCommentId);
+    return processTextNode(
+      node,
+      offset,
+      comments,
+      activeCommentId,
+      color,
+      activeColor,
+    );
   } else if (React.isValidElement(node)) {
     return processElementNode(
       node,
       offset,
       comments,
       activeCommentId,
+      color,
+      activeColor,
     );
   } else if (Array.isArray(node)) {
-    return processArrayNode(node, offset, comments, activeCommentId);
+    return processArrayNode(
+      node,
+      offset,
+      comments,
+      activeCommentId,
+      color,
+      activeColor,
+    );
   } else {
     return { node, offset };
   }
@@ -84,6 +108,8 @@ function processChildren(
   offset: number,
   comments: Comment[],
   activeCommentId: string | null,
+  color: string,
+  activeColor: string,
 ): { node: React.ReactNode; offset: number } {
   if (Array.isArray(children)) {
     return processArrayNode(
@@ -91,9 +117,18 @@ function processChildren(
       offset,
       comments,
       activeCommentId,
+      color,
+      activeColor,
     );
   } else {
-    return processNode(children, offset, comments, activeCommentId);
+    return processNode(
+      children,
+      offset,
+      comments,
+      activeCommentId,
+      color,
+      activeColor,
+    );
   }
 }
 
@@ -102,6 +137,8 @@ function processTextNode(
   offset: number,
   comments: Comment[],
   activeCommentId: string | null,
+  color: string,
+  activeColor: string,
 ): { node: React.ReactNode; offset: number } {
   const length = text.length;
   const end = offset + length;
@@ -151,13 +188,13 @@ function processTextNode(
           )
         : false;
 
-      const className = isActive ? 'highlight active' : 'highlight';
-
       nodes.push(
         <span
           data-comment-id={coveringComments[0].commentId}
           key={segmentStart}
-          className={className}
+          style={{
+            background: isActive ? activeColor : color,
+          }}
         >
           {segmentText}
         </span>,
@@ -176,10 +213,19 @@ function processElementNode(
   offset: number,
   comments: Comment[],
   activeCommentId: string | null,
+  color: string,
+  activeColor: string,
 ): { node: React.ReactNode; offset: number } {
   const { children } = element.props;
   const { node: processedChildren, offset: newOffset } =
-    processChildren(children, offset, comments, activeCommentId);
+    processChildren(
+      children,
+      offset,
+      comments,
+      activeCommentId,
+      color,
+      activeColor,
+    );
 
   return {
     node: React.cloneElement(element, {
@@ -195,6 +241,8 @@ function processArrayNode(
   offset: number,
   comments: Comment[],
   activeCommentId: string | null,
+  color: string,
+  activeColor: string,
 ): { node: React.ReactNode[]; offset: number } {
   const processedNodes: React.ReactNode[] = [];
   let currentOffset = offset;
@@ -205,6 +253,8 @@ function processArrayNode(
       currentOffset,
       comments,
       activeCommentId,
+      color,
+      activeColor,
     );
     processedNodes.push(processedNode);
     currentOffset = newOffset;
