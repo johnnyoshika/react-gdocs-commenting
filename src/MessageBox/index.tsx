@@ -1,6 +1,6 @@
-import type { Message } from '../types';
-import { Comment } from '../plugin/types';
 import Highlight from '../plugin/Highlight';
+import { Comment } from '../plugin/types';
+import type { Message } from '../types';
 
 const MessageBox = ({
   message,
@@ -15,7 +15,11 @@ const MessageBox = ({
         message.role === 'assistant' ? 'bg-blue-100' : 'bg-gray-200'
       }`}
     >
-      <Highlight markdown={message.content} comments={comments} />
+      <Highlight
+        markdown={message.content}
+        containerId={message.id}
+        comments={comments}
+      />
     </div>
   );
 };

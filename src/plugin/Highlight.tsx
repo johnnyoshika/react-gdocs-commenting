@@ -1,30 +1,49 @@
 import parse from 'html-react-parser';
 import { marked } from 'marked';
 import React, { useEffect, useState } from 'react';
+import { NEW_COMMENT_ID } from './constants';
 import { useSelectionContext } from './SelectionContext';
 import { Comment } from './types';
 
 const Highlight = ({
   markdown,
+  containerId,
   comments,
 }: {
   markdown: string;
+  containerId: string;
   comments: Comment[];
 }) => {
   const [result, setResult] = useState<{ node: React.ReactNode }>({
     node: null,
   });
 
-  const { activeCommentId } = useSelectionContext();
+  const { activeCommentId, newCommentSelectionRange } =
+    useSelectionContext();
 
   useEffect(() => {
+    // Collect all ranges to be highlighted
+    const selectionRanges: Array<Comment> = comments.map(comment => ({
+      id: comment.id,
+      selectionRange: comment.selectionRange,
+    }));
+
+    if (
+      newCommentSelectionRange &&
+      containerId === newCommentSelectionRange.containerId
+    )
+      selectionRanges.push({
+        id: NEW_COMMENT_ID,
+        selectionRange: newCommentSelectionRange,
+      });
+
     const processMarkdown = async () => {
       const htmlContent = await marked(markdown);
       const reactElements = parse(htmlContent);
       const result = processChildren(
         reactElements,
         0,
-        comments,
+        selectionRanges,
         activeCommentId,
       );
       setResult(result);
