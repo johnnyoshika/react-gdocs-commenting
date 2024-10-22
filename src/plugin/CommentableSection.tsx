@@ -99,6 +99,24 @@ const CommentableSection = ({
     };
   }, [reposition]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      // If clicking inside the section, let handleInteraction handle it
+      if (sectionRef.current?.contains(e.target as Node)) return;
+
+      // Otherwise, clear active comment and selection
+      setActiveCommentId(null);
+      setPositionedSelection(undefined);
+    };
+
+    // Use mousedown instead of click to ensure this runs before other click handlers
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setActiveCommentId, setPositionedSelection]);
+
   const handleInteraction = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
