@@ -56,11 +56,16 @@ const CommentContent: React.FC<{ comment: MessageComment }> = ({
   );
 };
 
-const CommentBox: React.FC<{ comment: MessageComment }> = ({
-  comment,
-}) => {
+const CommentBox: React.FC<{
+  comment: MessageComment;
+  isActive: boolean;
+}> = ({ comment, isActive }) => {
   return (
-    <div className="bg-gray-100 rounded-lg p-3 mb-2">
+    <div
+      className={`rounded-lg p-3 mb-2 transition-colors duration-200 ${
+        isActive ? 'bg-blue-50 ring-2 ring-blue-200' : 'bg-gray-100'
+      }`}
+    >
       <div className="flex items-center mb-2">
         <span className="font-bold">Johnny Oshika</span>
         <span className="ml-2 text-gray-600">12:32PM Oct 10</span>
@@ -70,7 +75,11 @@ const CommentBox: React.FC<{ comment: MessageComment }> = ({
         <input
           type="text"
           placeholder="Reply or add others with @"
-          className="w-full p-2 border border-gray-300 rounded-full"
+          className={`w-full p-2 border rounded-full transition-colors duration-200 ${
+            isActive
+              ? 'border-blue-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400'
+              : 'border-gray-300 focus:ring-2 focus:ring-gray-400 focus:border-gray-400'
+          }`}
         />
       </div>
     </div>

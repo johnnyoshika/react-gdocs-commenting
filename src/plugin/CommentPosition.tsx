@@ -5,15 +5,25 @@ import { useCommentPositionContext } from './CommentPositionContext';
 import { useSelectionContext } from './SelectionContext';
 import { Comment } from './types';
 
+type RenderPropFn = ({
+  isActive,
+}: {
+  isActive: boolean;
+}) => ReactNode;
+
+type CommentPositionProps = {
+  comment: Comment;
+  transition?: boolean;
+} & (
+  | { children: RenderPropFn }
+  | { children: ReactNode; renderProp?: never }
+);
+
 const CommentPosition = ({
   children,
   comment,
   transition = true,
-}: {
-  children: ReactNode;
-  comment: Comment;
-  transition?: boolean;
-}) => {
+}: CommentPositionProps) => {
   const {
     commentsSectionOffsetY,
     activeCommentId,
@@ -116,7 +126,11 @@ const CommentPosition = ({
       }}
       onFocus={onFocus}
     >
-      {children}
+      {typeof children === 'function'
+        ? (children as RenderPropFn)({
+            isActive: activeCommentId === comment.id,
+          })
+        : children}
     </div>
   );
 };

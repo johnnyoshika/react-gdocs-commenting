@@ -67,7 +67,12 @@ const AppLayout = () => {
               </NewComment>
               {comments.map(comment => (
                 <CommentPosition key={comment.id} comment={comment}>
-                  <CommentBox comment={comment} />
+                  {({ isActive }) => (
+                    <CommentBox
+                      comment={comment}
+                      isActive={isActive}
+                    />
+                  )}
                 </CommentPosition>
               ))}
             </CommentsSection>
